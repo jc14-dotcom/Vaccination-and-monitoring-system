@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Warning Design Options</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .design-option {
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .design-option:hover {
+            border-color: #7a5bbd;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(122, 91, 189, 0.2);
+        }
+        .badge-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .7; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">Stock Warning Design Options</h1>
+        <p class="text-gray-600 mb-8">Choose the best design for displaying vaccine stock warnings in the patient card</p>
+
+        <!-- OPTION 1: Inline Stock Badges (Your Idea - Improved) -->
+        <div class="design-option bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-purple-900 mb-2">Option 1: Inline Stock Status Badges</h2>
+            <p class="text-gray-600 mb-6">Stock indicators appear directly in the vaccine name column - clean and contextual</p>
+            
+            <div class="overflow-x-auto rounded-xl border-2 border-gray-200">
+                <table class="min-w-full">
+                    <thead class="bg-purple-700 text-white">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold">BAKUNA</th>
+                            <th class="px-4 py-3 text-center font-semibold">DOSES</th>
+                            <th class="px-4 py-3 text-center font-semibold">PETSA NG BAKUNA</th>
+                            <th class="px-4 py-3 text-center font-semibold">REMARKS</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium">BCG</span>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <circle cx="10" cy="10" r="8"/>
+                                        </svg>
+                                        Out of Stock
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">Pagkapanganak</td>
+                            <td class="px-4 py-3">
+                                <input type="date" disabled class="w-full rounded-md border-2 border-gray-300 bg-gray-100 px-3 py-1.5 text-center text-sm cursor-not-allowed">
+                            </td>
+                            <td class="px-4 py-3">
+                                <input type="text" class="w-full rounded-md border-2 border-gray-300 px-3 py-1.5 text-sm">
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium">Hepatitis B</span>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z"/>
+                                        </svg>
+                                        5 doses left
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">Pagkapanganak</td>
+                            <td class="px-4 py-3">
+                                <input type="date" class="w-full rounded-md border-2 border-purple-300 px-3 py-1.5 text-center text-sm">
+                            </td>
+                            <td class="px-4 py-3">
+                                <input type="text" class="w-full rounded-md border-2 border-gray-300 px-3 py-1.5 text-sm">
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium">Pentavalent</span>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        In Stock
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">1.5, 2.5, 3.5 Months</td>
+                            <td class="px-4 py-3">
+                                <div class="flex gap-2">
+                                    <input type="date" class="flex-1 rounded-md border-2 border-purple-300 px-2 py-1.5 text-center text-sm">
+                                    <input type="date" class="flex-1 rounded-md border-2 border-purple-300 px-2 py-1.5 text-center text-sm">
+                                    <input type="date" class="flex-1 rounded-md border-2 border-purple-300 px-2 py-1.5 text-center text-sm">
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <input type="text" class="w-full rounded-md border-2 border-gray-300 px-3 py-1.5 text-sm">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 flex items-start gap-2 text-sm text-gray-600">
+                <svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                    <strong>Pros:</strong> Clean, contextual, doesn't take extra space<br>
+                    <strong>Cons:</strong> May be missed if user scans quickly, adds visual noise to table
+                </div>
+            </div>
+        </div>
+
+        <!-- OPTION 2: Compact Toast Notification (Top Right) -->
+        <div class="design-option bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-purple-900 mb-2">Option 2: Floating Stock Summary Badge</h2>
+            <p class="text-gray-600 mb-6">A subtle floating badge in the top-right corner - non-intrusive but always visible</p>
+            
+            <div class="relative bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                <!-- Floating Badge -->
+                <div class="absolute top-4 right-4 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden" style="max-width: 280px;">
+                    <div class="bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 flex items-center gap-2">
+                        <div class="w-2 h-2 bg-white rounded-full badge-pulse"></div>
+                        <span class="text-white font-semibold text-sm">Stock Alert</span>
+                        <button class="ml-auto text-white hover:text-red-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-3 space-y-2">
+                        <div class="flex items-center gap-2 text-xs">
+                            <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                            <span class="text-red-700 font-semibold">3 out of stock</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                            <span class="text-yellow-700 font-semibold">1 low stock</span>
+                        </div>
+                        <button class="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold py-2 px-3 rounded-lg mt-2 transition-colors">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mock Table -->
+                <div class="overflow-x-auto rounded-xl border-2 border-gray-300">
+                    <table class="min-w-full bg-white">
+                        <thead class="bg-purple-700 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-semibold">BAKUNA</th>
+                                <th class="px-4 py-3 text-center font-semibold">DOSES</th>
+                                <th class="px-4 py-3 text-center font-semibold">PETSA NG BAKUNA</th>
+                                <th class="px-4 py-3 text-center font-semibold">REMARKS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr><td class="px-4 py-3 font-medium">BCG</td><td class="px-4 py-3 text-center text-sm text-gray-600">Pagkapanganak</td><td class="px-4 py-3"><input type="date" class="w-full rounded border px-2 py-1 text-sm"></td><td class="px-4 py-3"><input type="text" class="w-full rounded border px-2 py-1 text-sm"></td></tr>
+                            <tr><td class="px-4 py-3 font-medium">Hepatitis B</td><td class="px-4 py-3 text-center text-sm text-gray-600">Pagkapanganak</td><td class="px-4 py-3"><input type="date" class="w-full rounded border px-2 py-1 text-sm"></td><td class="px-4 py-3"><input type="text" class="w-full rounded border px-2 py-1 text-sm"></td></tr>
+                            <tr><td class="px-4 py-3 font-medium">Pentavalent</td><td class="px-4 py-3 text-center text-sm text-gray-600">1.5, 2.5, 3.5 Months</td><td class="px-4 py-3"><div class="flex gap-1"><input type="date" class="flex-1 rounded border px-1 py-1 text-xs"><input type="date" class="flex-1 rounded border px-1 py-1 text-xs"><input type="date" class="flex-1 rounded border px-1 py-1 text-xs"></div></td><td class="px-4 py-3"><input type="text" class="w-full rounded border px-2 py-1 text-sm"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4 flex items-start gap-2 text-sm text-gray-600">
+                <svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                    <strong>Pros:</strong> Minimal space usage, always visible, dismissible, clean design<br>
+                    <strong>Cons:</strong> Requires expanding to see details, may overlap on small screens
+                </div>
+            </div>
+        </div>
+
+        <!-- OPTION 3: Single Compact Banner with Expandable Details -->
+        <div class="design-option bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-purple-900 mb-2">Option 3: Collapsible Summary Banner</h2>
+            <p class="text-gray-600 mb-6">One-line summary that expands to show details - best of both worlds</p>
+            
+            <div class="space-y-4">
+                <!-- Collapsed State -->
+                <div class="bg-gradient-to-r from-red-50 to-yellow-50 border-l-4 border-red-500 rounded-lg p-3 cursor-pointer hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex -space-x-1">
+                                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">3</div>
+                                <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">1</div>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">4 vaccines need attention</p>
+                                <p class="text-xs text-gray-600">3 out of stock, 1 running low</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="#" class="text-xs font-semibold text-purple-600 hover:text-purple-800 underline">Update Inventory</a>
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expanded State Example -->
+                <div class="bg-white border-2 border-purple-200 rounded-lg overflow-hidden">
+                    <div class="bg-gradient-to-r from-red-50 to-yellow-50 border-l-4 border-red-500 p-3 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="flex -space-x-1">
+                                    <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">3</div>
+                                    <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">1</div>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900">4 vaccines need attention</p>
+                                    <p class="text-xs text-gray-600">Click to collapse details</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a href="#" class="text-xs font-semibold text-purple-600 hover:text-purple-800 underline">Update Inventory</a>
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <svg class="w-5 h-5 transform rotate-180 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-2">
+                                <h4 class="text-xs font-bold text-red-800 uppercase flex items-center gap-1">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                    Out of Stock
+                                </h4>
+                                <div class="space-y-1">
+                                    <div class="text-xs bg-red-50 rounded px-2 py-1.5 text-red-900 font-medium">BCG</div>
+                                    <div class="text-xs bg-red-50 rounded px-2 py-1.5 text-red-900 font-medium">Pentavalent</div>
+                                    <div class="text-xs bg-red-50 rounded px-2 py-1.5 text-red-900 font-medium">Oral Polio</div>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <h4 class="text-xs font-bold text-yellow-800 uppercase flex items-center gap-1">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                    Low Stock
+                                </h4>
+                                <div class="space-y-1">
+                                    <div class="text-xs bg-yellow-50 rounded px-2 py-1.5 text-yellow-900 font-medium">Hepatitis B <span class="text-yellow-600">(5 doses)</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mock Table -->
+                <div class="overflow-x-auto rounded-xl border-2 border-gray-200">
+                    <table class="min-w-full bg-white">
+                        <thead class="bg-purple-700 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-semibold">BAKUNA</th>
+                                <th class="px-4 py-3 text-center font-semibold">DOSES</th>
+                                <th class="px-4 py-3 text-center font-semibold">PETSA NG BAKUNA</th>
+                                <th class="px-4 py-3 text-center font-semibold">REMARKS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr><td class="px-4 py-3 font-medium">BCG</td><td class="px-4 py-3 text-center text-sm">Pagkapanganak</td><td class="px-4 py-3"><input type="date" class="w-full rounded border px-2 py-1 text-sm"></td><td class="px-4 py-3"><input type="text" class="w-full rounded border px-2 py-1 text-sm"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4 flex items-start gap-2 text-sm text-gray-600">
+                <svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                    <strong>Pros:</strong> Compact by default, detailed when needed, clean interface, user control<br>
+                    <strong>Cons:</strong> Requires interaction to see full details
+                </div>
+            </div>
+        </div>
+
+        <!-- OPTION 4: Icon Only Status in Table -->
+        <div class="design-option bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-purple-900 mb-2">Option 4: Icon-Only Stock Indicators</h2>
+            <p class="text-gray-600 mb-6">Minimal visual indicators with tooltip on hover - ultra-clean approach</p>
+            
+            <div class="overflow-x-auto rounded-xl border-2 border-gray-200">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-purple-700 text-white">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold">
+                                <div class="flex items-center gap-2">
+                                    <span>BAKUNA</span>
+                                    <div class="group relative">
+                                        <svg class="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <div class="hidden group-hover:block absolute left-0 top-full mt-1 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
+                                            Colored dots indicate stock status
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="px-4 py-3 text-center font-semibold">DOSES</th>
+                            <th class="px-4 py-3 text-center font-semibold">PETSA NG BAKUNA</th>
+                            <th class="px-4 py-3 text-center font-semibold">REMARKS</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr class="hover:bg-gray-50 group">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="relative">
+                                        <div class="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
+                                        <div class="absolute w-2.5 h-2.5 bg-red-500 rounded-full animate-ping opacity-75"></div>
+                                    </div>
+                                    <span class="font-medium">BCG</span>
+                                    <div class="hidden group-hover:block ml-auto">
+                                        <span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-semibold">Out of Stock</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">Pagkapanganak</td>
+                            <td class="px-4 py-3">
+                                <input type="date" disabled class="w-full rounded-md border-2 border-gray-300 bg-gray-100 px-3 py-1.5 text-center text-sm cursor-not-allowed">
+                            </td>
+                            <td class="px-4 py-3">
+                                <input type="text" class="w-full rounded-md border-2 border-gray-300 px-3 py-1.5 text-sm">
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 group">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2.5 h-2.5 bg-yellow-500 rounded-full"></div>
+                                    <span class="font-medium">Hepatitis B</span>
+                                    <div class="hidden group-hover:block ml-auto">
+                                        <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-semibold">5 doses left</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">Pagkapanganak</td>
+                            <td class="px-4 py-3">
+                                <input type="date" class="w-full rounded-md border-2 border-purple-300 px-3 py-1.5 text-center text-sm">
+                            </td>
+                            <td class="px-4 py-3">
+                                <input type="text" class="w-full rounded-md border-2 border-gray-300 px-3 py-1.5 text-sm">
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 group">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2.5 h-2.5 bg-green-500 rounded-full"></div>
+                                    <span class="font-medium">Pentavalent</span>
+                                    <div class="hidden group-hover:block ml-auto">
+                                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-semibold">In Stock</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">1.5, 2.5, 3.5 Months</td>
+                            <td class="px-4 py-3">
+                                <div class="flex gap-2">
+                                    <input type="date" class="flex-1 rounded-md border-2 border-purple-300 px-2 py-1.5 text-center text-sm">
+                                    <input type="date" class="flex-1 rounded-md border-2 border-purple-300 px-2 py-1.5 text-center text-sm">
+                                    <input type="date" class="flex-1 rounded-md border-2 border-purple-300 px-2 py-1.5 text-center text-sm">
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <input type="text" class="w-full rounded-md border-2 border-gray-300 px-3 py-1.5 text-sm">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+                <div class="flex items-center gap-4 text-xs">
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 bg-green-500 rounded-full"></div>
+                        <span class="text-gray-600">In Stock</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 bg-yellow-500 rounded-full"></div>
+                        <span class="text-gray-600">Low Stock</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
+                        <span class="text-gray-600">Out of Stock</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 flex items-start gap-2 text-sm text-gray-600">
+                <svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                    <strong>Pros:</strong> Ultra-minimal, professional, details on hover, clean table<br>
+                    <strong>Cons:</strong> May be too subtle, requires hovering to see stock levels, legend needed
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendation -->
+        <div class="bg-gradient-to-r from-purple-700 to-purple-900 rounded-2xl shadow-xl p-8 text-white">
+            <h2 class="text-2xl font-bold mb-4">🎯 My Recommendation</h2>
+            <p class="text-purple-100 text-lg mb-4">Based on UX best practices and your requirements:</p>
+            <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
+                <h3 class="text-xl font-bold mb-2">Option 3: Collapsible Summary Banner</h3>
+                <p class="text-purple-100 mb-4">This option provides the best balance:</p>
+                <ul class="space-y-2 text-purple-100">
+                    <li class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-green-300 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Minimal space usage when collapsed (single line)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-green-300 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Clear at-a-glance summary (badge counts)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-green-300 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Details available when user wants them</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-green-300 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Keeps table clean and focused on data entry</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-green-300 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Modern, professional appearance</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center text-gray-600">
+            <p class="text-sm">Review each option and choose the one that best fits your workflow and visual preferences.</p>
+            <p class="text-sm mt-2">The error modal will remain as is - these designs are specifically for the stock warnings.</p>
+        </div>
+    </div>
+</body>
+</html>

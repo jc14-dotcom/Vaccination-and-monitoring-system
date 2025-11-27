@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Cache Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .success { color: #10b981; font-weight: bold; }
+        .error { color: #ef4444; font-weight: bold; }
+        .info { color: #3b82f6; }
+        button { padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Browser Cache Diagnostic Tool</h1>
+    
+    <div class="box">
+        <h2>Page Load Info</h2>
+        <p><strong>Loaded at:</strong> <span id="loadTime"></span></p>
+        <p><strong>Random ID:</strong> <span id="randomId"></span></p>
+        <p><strong>Navigation Type:</strong> <span id="navType"></span></p>
+        <p><strong>From BFCache:</strong> <span id="bfcache"></span></p>
+    </div>
+    
+    <div class="box">
+        <h2>Cache Headers Test</h2>
+        <p id="cacheHeaders">Testing...</p>
+    </div>
+    
+    <div class="box">
+        <h2>Actions</h2>
+        <button onclick="window.location.reload()">Normal Reload</button>
+        <button onclick="window.location.reload(true)">Hard Reload</button>
+        <button onclick="clearAllCaches()">Clear All Caches</button>
+        <button onclick="testInventory()">Test Inventory Page</button>
+    </div>
+    
+    <div class="box">
+        <h2>Console Logs</h2>
+        <div id="logs" style="max-height: 300px; overflow-y: auto; background: #1e293b; color: #10b981; padding: 10px; border-radius: 4px;"></div>
+    </div>
+
+    <script>
+        const logs = document.getElementById('logs');
+        function log(msg, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6';
+            logs.innerHTML += `<div style="color: ${color}">[${timestamp}] ${msg}</div>`;
+            logs.scrollTop = logs.scrollHeight;
+            console.log(msg);
+        }
+        
+        // Display load info
+        document.getElementById('loadTime').textContent = new Date().toLocaleString();
+        const randomId = Math.random().toString(36).substring(7);
+        document.getElementById('randomId').textContent = randomId;
+        
+        // Navigation type
+        const navType = performance.navigation.type;
+        const navTypes = ['Navigate', 'Reload', 'Back/Forward', 'Reserved'];
+        document.getElementById('navType').textContent = `${navTypes[navType]} (${navType})`;
+        
+        // BFCache detection
+        window.addEventListener('pageshow', function(event) {
+            const fromBFCache = event.persisted;
+            document.getElementById('bfcache').innerHTML = fromBFCache 
+                ? '<span class="error">YES (cached in memory)</span>' 
+                : '<span class="success">NO (fresh load)</span>';
+            
+            if (fromBFCache) {
+                log('⚠️ Page loaded from BFCache - this is why your changes dont show!', 'error');
+            } else {
+                log('✓ Fresh page load', 'success');
+            }
+        });
+        
+        // Test cache headers
+        fetch(window.location.href, { cache: 'no-store' })
+            .then(response => {
+                const cacheControl = response.headers.get('Cache-Control');
+                const pragma = response.headers.get('Pragma');
+                const expires = response.headers.get('Expires');
+                
+                let result = '<ul>';
+                result += `<li>Cache-Control: ${cacheControl || '<span class="error">MISSING</span>'}</li>`;
+                result += `<li>Pragma: ${pragma || '<span class="error">MISSING</span>'}</li>`;
+                result += `<li>Expires: ${expires || '<span class="error">MISSING</span>'}</li>`;
+                result += '</ul>';
+                
+                document.getElementById('cacheHeaders').innerHTML = result;
+                
+                if (cacheControl && cacheControl.includes('no-store')) {
+                    log('✓ Cache-Control header is correct', 'success');
+                } else {
+                    log('✗ Cache-Control header missing or incorrect', 'error');
+                }
+            });
+        
+        async function clearAllCaches() {
+            log('Clearing all caches...', 'info');
+            
+            // Clear Cache API
+            if ('caches' in window) {
+                const names = await caches.keys();
+                for (let name of names) {
+                    await caches.delete(name);
+                    log(`✓ Deleted cache: ${name}`, 'success');
+                }
+            }
+            
+            // Clear localStorage
+            localStorage.clear();
+            log('✓ Cleared localStorage', 'success');
+            
+            // Clear sessionStorage
+            sessionStorage.clear();
+            log('✓ Cleared sessionStorage', 'success');
+            
+            log('✓ All caches cleared! Now reload the page.', 'success');
+        }
+        
+        function testInventory() {
+            log('Opening inventory page...', 'info');
+            window.location.href = '/health_worker/inventory';
+        }
+        
+        // Log initial state
+        log('Page loaded with ID: ' + randomId);
+        log('If you reload and see the SAME random ID, the page is cached!', 'info');
+    </script>
+</body>
+</html>

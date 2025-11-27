@@ -1,0 +1,127 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+
+class VaccinationSchedule extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'vaccination_date',
+        'barangay',
+        'status',
+        'notes',
+        'created_by',
+        'cancelled_at',
+        'cancellation_reason',
+        'cancelled_by'
+    ];
+
+    protected $casts = [
+        'vaccination_date' => 'date',
+        'cancelled_at' => 'datetime',
+    ];
+
+    /**
+     * Relationship: Schedule belongs to a health worker (creator)
+     */
+    public function healthWorker()
+    {
+        return $this->belongsTo(HealthWorker::class, 'created_by');
+    }
+
+    /**
+     * Relationship: Schedule cancelled by a health worker
+     */
+    public function cancelledBy()
+    {
+        return $this->belongsTo(HealthWorker::class, 'cancelled_by');
+    }
+
+    /**
+     * Scope: Get only scheduled (upcoming) vaccination days
+     */
+    public function scopeScheduled($query)
+    {
+        return $query->where('status', 'scheduled')
+                     ->where('vaccination_date', '>=', Carbon::today());
+    }
+
+    /**
+     * Scope: Get today's schedules
+     */
+    public function scopeToday($query)
+    {
+        return $query->whereDate('vaccination_date', Carbon::today());
+    }
+
+    /**
+     * Scope: Get active schedules
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
+     * Check if schedule is for today
+     */
+    public function isToday()
+    {
+        return $this->vaccination_date->isToday();
+    }
+
+    /**
+     * Check if schedule is upcoming (future date)
+     */
+    public function isUpcoming()
+    {
+        return $this->vaccination_date->isFuture();
+    }
+
+    /**
+     * Check if schedule is past
+     */
+    public function isPast()
+    {
+        return $this->vaccination_date->isPast() && !$this->vaccination_date->isToday();
+    }
+
+    /**
+     * Check if schedule is cancelled
+     */
+    public function isCancelled()
+    {
+        return $this->status === 'cancelled';
+    }
+
+    /**
+     * Check if schedule can be cancelled
+     */
+    public function canBeCancelled()
+    {
+        return in_array($this->status, ['scheduled', 'active']) && !$this->isCancelled();
+    }
+
+    /**
+     * Get days until vaccination
+     */
+    public function daysUntil()
+    {
+        if ($this->isToday()) {
+            return 'Today';
+        }
+        
+        $days = Carbon::today()->diffInDays($this->vaccination_date, false);
+        
+        if ($days < 0) {
+            return 'Past';
+        }
+        
+        return $days == 1 ? 'Tomorrow' : $days . ' days';
+    }
+}

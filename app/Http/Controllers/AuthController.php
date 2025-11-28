@@ -501,16 +501,30 @@ public function store(Request $request)
         }
         
         // Check if the vaccination day has passed
-        if (\Carbon\Carbon::parse($schedule->vaccination_date)->isFuture()) {
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $nowPHT = \Carbon\Carbon::now('Asia/Manila');
+        $todayPHT = \Carbon\Carbon::today('Asia/Manila');
+        $scheduleDatePHT = \Carbon\Carbon::parse($schedule->vaccination_date)->setTimezone('Asia/Manila');
+        
+        if ($scheduleDatePHT->isAfter($todayPHT)) {
             return response()->json(['error' => 'You can only submit feedback after the vaccination day.'], 403);
         }
         
         // Check if within 24-hour window
-        $vaccinationDate = \Carbon\Carbon::parse($schedule->vaccination_date);
-        $now = \Carbon\Carbon::now();
-        if ($now->diffInHours($vaccinationDate) > 24) {
+        $vaccinationDate = $scheduleDatePHT;
+        if ($nowPHT->diffInHours($vaccinationDate) > 24) {
             return response()->json(['error' => 'The 24-hour feedback window has expired.'], 403);
         }
+        
+        // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+        // if (\Carbon\Carbon::parse($schedule->vaccination_date)->isFuture()) {
+        //     return response()->json(['error' => 'You can only submit feedback after the vaccination day.'], 403);
+        // }
+        // $vaccinationDate = \Carbon\Carbon::parse($schedule->vaccination_date);
+        // $now = \Carbon\Carbon::now();
+        // if ($now->diffInHours($vaccinationDate) > 24) {
+        //     return response()->json(['error' => 'The 24-hour feedback window has expired.'], 403);
+        // }
         
         // Check if parent already submitted feedback for this schedule
         $existingFeedback = Feedback::where('parent_id', $user->id)

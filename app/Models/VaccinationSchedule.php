@@ -45,10 +45,15 @@ class VaccinationSchedule extends Model
     /**
      * Scope: Get only scheduled (upcoming) vaccination days
      */
-    public function scopeScheduled($query)
+    public function scopeUpcoming($query)
     {
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
         return $query->where('status', 'scheduled')
-                     ->where('vaccination_date', '>=', Carbon::today());
+                     ->where('vaccination_date', '>=', Carbon::today('Asia/Manila'));
+        
+        // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+        // return $query->where('status', 'scheduled')
+        //              ->where('vaccination_date', '>=', Carbon::today());
     }
 
     /**
@@ -56,7 +61,11 @@ class VaccinationSchedule extends Model
      */
     public function scopeToday($query)
     {
-        return $query->whereDate('vaccination_date', Carbon::today());
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        return $query->whereDate('vaccination_date', Carbon::today('Asia/Manila'));
+        
+        // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+        // return $query->whereDate('vaccination_date', Carbon::today());
     }
 
     /**
@@ -72,7 +81,13 @@ class VaccinationSchedule extends Model
      */
     public function isToday()
     {
-        return $this->vaccination_date->isToday();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $todayPHT = Carbon::today('Asia/Manila');
+        $vaccDate = Carbon::parse($this->vaccination_date);
+        return $vaccDate->isSameDay($todayPHT);
+        
+        // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+        // return $this->vaccination_date->isToday();
     }
 
     /**
@@ -80,7 +95,13 @@ class VaccinationSchedule extends Model
      */
     public function isUpcoming()
     {
-        return $this->vaccination_date->isFuture();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $todayPHT = Carbon::today('Asia/Manila');
+        $vaccDate = Carbon::parse($this->vaccination_date);
+        return $vaccDate->isAfter($todayPHT);
+        
+        // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+        // return $this->vaccination_date->isFuture();
     }
 
     /**
@@ -88,7 +109,13 @@ class VaccinationSchedule extends Model
      */
     public function isPast()
     {
-        return $this->vaccination_date->isPast() && !$this->vaccination_date->isToday();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $todayPHT = Carbon::today('Asia/Manila');
+        $vaccDate = Carbon::parse($this->vaccination_date);
+        return $vaccDate->isBefore($todayPHT);
+        
+        // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+        // return $this->vaccination_date->isPast() && !$this->vaccination_date->isToday();
     }
 
     /**
@@ -116,7 +143,11 @@ class VaccinationSchedule extends Model
             return 'Today';
         }
         
-        $days = Carbon::today()->diffInDays($this->vaccination_date, false);
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $days = Carbon::today('Asia/Manila')->diffInDays($this->vaccination_date, false);
+        
+        // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+        // $days = Carbon::today()->diffInDays($this->vaccination_date, false);
         
         if ($days < 0) {
             return 'Past';

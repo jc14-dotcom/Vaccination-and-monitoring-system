@@ -322,11 +322,12 @@ class ReportController extends Controller
             $file = $request->file('file');
             $extension = $file->getClientOriginalExtension();
             
-            Log::info('Import attempt', [
-                'file' => $file->getClientOriginalName(),
-                'extension' => $extension,
-                'size' => $file->getSize()
-            ]);
+            // DEBUG: Uncomment for debugging imports
+            // Log::info('Import attempt', [
+            //     'file' => $file->getClientOriginalName(),
+            //     'extension' => $extension,
+            //     'size' => $file->getSize()
+            // ]);
             
             // Parse the file based on extension
             if (in_array($extension, ['xlsx', 'xls'])) {
@@ -340,7 +341,7 @@ class ReportController extends Controller
                 ], 400);
             }
             
-            Log::info('Parsed data count: ' . count($importData));
+            // DEBUG: Log::info('Parsed data count: ' . count($importData));
             
             if (empty($importData)) {
                 return response()->json([
@@ -387,7 +388,7 @@ class ReportController extends Controller
         $worksheet = $spreadsheet->getActiveSheet();
         $rows = $worksheet->toArray();
         
-        Log::info('Excel file loaded', ['total_rows' => count($rows)]);
+        // DEBUG: Log::info('Excel file loaded', ['total_rows' => count($rows)]);
         
         if (count($rows) < 3) {
             Log::error('Not enough rows in file');
@@ -399,10 +400,10 @@ class ReportController extends Controller
         $isWideFormat = isset($firstRow[0]) && strpos(strtolower($firstRow[0]), 'child care') !== false;
         
         if ($isWideFormat) {
-            Log::info('Detected wide format export');
+            // DEBUG: Log::info('Detected wide format export');
             return $this->parseWideFormat($rows);
         } else {
-            Log::info('Detected long format template');
+            // DEBUG: Log::info('Detected long format template');
             return $this->parseLongFormat($rows);
         }
     }
@@ -444,10 +445,10 @@ class ReportController extends Controller
             }
         }
         
-        Log::info('Found headers', [
-            'vaccine_row' => $vaccineRowIndex,
-            'subheader_row' => $headerRowIndex
-        ]);
+        // DEBUG: Log::info('Found headers', [
+        //     'vaccine_row' => $vaccineRowIndex,
+        //     'subheader_row' => $headerRowIndex
+        // ]);
         
         if ($headerRowIndex === -1 || $vaccineRowIndex === -1) {
             Log::error('Could not find proper header rows');
@@ -457,8 +458,8 @@ class ReportController extends Controller
         $vaccineHeaders = $rows[$vaccineRowIndex];
         $subHeaders = $rows[$headerRowIndex];
         
-        Log::info('Vaccine headers row:', ['row' => $vaccineHeaders]);
-        Log::info('Sub headers row:', ['row' => $subHeaders]);
+        // DEBUG: Log::info('Vaccine headers row:', ['row' => $vaccineHeaders]);
+        // DEBUG: Log::info('Sub headers row:', ['row' => $subHeaders]);
         
         // Build vaccine column map
         $vaccineMap = [];
@@ -479,7 +480,7 @@ class ReportController extends Controller
             }
         }
         
-        Log::info('Vaccine map created', ['map' => $vaccineMap]);
+        // DEBUG: Log::info('Vaccine map created', ['map' => $vaccineMap]);
         
         // Parse data rows (start after header row)
         $data = [];
@@ -492,10 +493,10 @@ class ReportController extends Controller
             $barangay = trim($row[0] ?? '');
             $eligiblePop = (int)($row[1] ?? 0);
             
-            // Log first few data rows
-            if ($rowIdx <= $dataStartRow + 2) {
-                Log::info("Data row {$rowIdx}:", ['barangay' => $barangay, 'eligible_pop' => $eligiblePop, 'row' => $row]);
-            }
+            // DEBUG: Log first few data rows
+            // if ($rowIdx <= $dataStartRow + 2) {
+            //     Log::info("Data row {$rowIdx}:", ['barangay' => $barangay, 'eligible_pop' => $eligiblePop, 'row' => $row]);
+            // }
             
             // Skip empty rows, total row, or rows with metadata
             if (empty($barangay) || 
@@ -543,7 +544,7 @@ class ReportController extends Controller
             }
         }
         
-        Log::info('Parsed wide format data', ['count' => count($data), 'sample' => array_slice($data, 0, 3)]);
+        // DEBUG: Log::info('Parsed wide format data', ['count' => count($data), 'sample' => array_slice($data, 0, 3)]);
         return $data;
     }
     
@@ -574,7 +575,7 @@ class ReportController extends Controller
             ];
         }
         
-        Log::info('Parsed long format data', ['count' => count($data)]);
+        // DEBUG: Log::info('Parsed long format data', ['count' => count($data)]);
         return $data;
     }
     

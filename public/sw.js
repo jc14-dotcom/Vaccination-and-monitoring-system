@@ -22,7 +22,7 @@ const messaging = firebase.messaging();
 
 // Handle background FCM messages (data-only messages)
 messaging.onBackgroundMessage(async (payload) => {
-    console.log('[SW] Background message received');
+    // DEBUG: console.log('[SW] Background message received');
     
     // Check if any window/tab is currently visible
     const clientList = await self.clients.matchAll({
@@ -34,12 +34,12 @@ messaging.onBackgroundMessage(async (payload) => {
     
     if (hasVisibleClient) {
         // Page is visible - foreground handler will show notification
-        console.log('[SW] Page visible, skipping (foreground will handle)');
+        // DEBUG: console.log('[SW] Page visible, skipping (foreground will handle)');
         return;
     }
     
     // Page is NOT visible - show notification from service worker
-    console.log('[SW] Page hidden, showing notification');
+    // DEBUG: console.log('[SW] Page hidden, showing notification');
     
     const title = payload.data?.title || 'Notification';
     const body = payload.data?.body || '';
@@ -72,12 +72,12 @@ const ASSETS_TO_CACHE = [
 
 // Install event - cache essential assets
 self.addEventListener('install', (event) => {
-    console.log('[Service Worker] Installing...');
+    // DEBUG: console.log('[Service Worker] Installing...');
     
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('[Service Worker] Caching essential assets');
+                // DEBUG: console.log('[Service Worker] Caching essential assets');
                 return cache.addAll(ASSETS_TO_CACHE.map(url => new Request(url, {cache: 'reload'})));
             })
             .catch((error) => {
@@ -91,14 +91,14 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-    console.log('[Service Worker] Activating...');
+    // DEBUG: console.log('[Service Worker] Activating...');
     
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName !== CACHE_NAME) {
-                        console.log('[Service Worker] Deleting old cache:', cacheName);
+                        // DEBUG: console.log('[Service Worker] Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
@@ -165,7 +165,7 @@ self.addEventListener('fetch', (event) => {
 
 // Push event - handle incoming push notifications
 self.addEventListener('push', (event) => {
-    console.log('[Service Worker] Push notification received');
+    // DEBUG: console.log('[Service Worker] Push notification received');
     
     let notificationData = {
         title: 'Bagong Abiso',
@@ -216,7 +216,7 @@ self.addEventListener('push', (event) => {
 
 // Notification click event - handle user clicking notification
 self.addEventListener('notificationclick', (event) => {
-    console.log('[Service Worker] Notification clicked:', event.notification.tag);
+    // DEBUG: console.log('[Service Worker] Notification clicked:', event.notification.tag);
     
     event.notification.close();
     
@@ -252,7 +252,7 @@ self.addEventListener('notificationclick', (event) => {
 
 // Notification close event - track when user dismisses notification
 self.addEventListener('notificationclose', (event) => {
-    console.log('[Service Worker] Notification closed:', event.notification.tag);
+    // DEBUG: console.log('[Service Worker] Notification closed:', event.notification.tag);
     
     // Optional: Track dismissal analytics
     const notificationId = event.notification.data?.notification_id;
@@ -275,7 +275,7 @@ self.addEventListener('notificationclose', (event) => {
 
 // Message event - handle messages from the app
 self.addEventListener('message', (event) => {
-    console.log('[Service Worker] Message received:', event.data);
+    // DEBUG: console.log('[Service Worker] Message received:', event.data);
     
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
@@ -296,7 +296,7 @@ self.addEventListener('message', (event) => {
 
 // Sync event - handle background sync (for offline actions)
 self.addEventListener('sync', (event) => {
-    console.log('[Service Worker] Background sync:', event.tag);
+    // DEBUG: console.log('[Service Worker] Background sync:', event.tag);
     
     if (event.tag === 'sync-notifications') {
         event.waitUntil(
@@ -304,7 +304,7 @@ self.addEventListener('sync', (event) => {
             fetch('/api/notifications/check')
                 .then(response => response.json())
                 .then(data => {
-                    console.log('[Service Worker] Notifications synced:', data);
+                    // DEBUG: console.log('[Service Worker] Notifications synced:', data);
                 })
                 .catch(error => {
                     console.error('[Service Worker] Sync failed:', error);
@@ -313,4 +313,4 @@ self.addEventListener('sync', (event) => {
     }
 });
 
-console.log('[Service Worker] Loaded successfully');
+// DEBUG: console.log('[Service Worker] Loaded successfully');

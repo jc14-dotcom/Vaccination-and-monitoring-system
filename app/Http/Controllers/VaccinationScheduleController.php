@@ -106,8 +106,15 @@ class VaccinationScheduleController extends Controller
         }
 
         // Determine initial status - if date is today, set as 'active', otherwise 'scheduled'
-        $isToday = Carbon::parse($request->vaccination_date)->isToday();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $todayPHT = Carbon::today('Asia/Manila');
+        $scheduleDatePHT = Carbon::parse($request->vaccination_date);
+        $isToday = $scheduleDatePHT->isSameDay($todayPHT);
         $initialStatus = $isToday ? 'active' : 'scheduled';
+        
+        // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+        // $isToday = Carbon::parse($request->vaccination_date)->isToday();
+        // $initialStatus = $isToday ? 'active' : 'scheduled';
         
         $schedule = VaccinationSchedule::create([
             'vaccination_date' => $request->vaccination_date,
@@ -118,14 +125,19 @@ class VaccinationScheduleController extends Controller
         ]);
 
         // Send notifications to parents ONLY if vaccination is today, tomorrow, or 3 days away
-        $daysUntil = Carbon::today()->diffInDays($schedule->vaccination_date, false);
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $daysUntil = Carbon::today('Asia/Manila')->diffInDays($schedule->vaccination_date, false);
         
-        Log::info("Schedule created, checking notification timing", [
-            'schedule_id' => $schedule->id,
-            'barangay' => $schedule->barangay,
-            'vaccination_date' => $schedule->vaccination_date,
-            'days_until' => $daysUntil
-        ]);
+        // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+        // $daysUntil = Carbon::today()->diffInDays($schedule->vaccination_date, false);
+        
+        // DEBUG: Uncomment for debugging
+        // Log::info("Schedule created, checking notification timing", [
+        //     'schedule_id' => $schedule->id,
+        //     'barangay' => $schedule->barangay,
+        //     'vaccination_date' => $schedule->vaccination_date,
+        //     'days_until' => $daysUntil
+        // ]);
         
         if ($daysUntil == 0 || $daysUntil == 1 || $daysUntil == 3) {
             // Send immediate notification (today, 1 day before, or 3 days before)
@@ -267,11 +279,12 @@ class VaccinationScheduleController extends Controller
             // Check if it's for RHU (Health Center) - notify ALL parents in any barangay
             $isRHU = $schedule->barangay === 'RHU (Health Center)';
             
-            Log::info("Starting notification for schedule", [
-                'schedule_id' => $schedule->id,
-                'barangay' => $schedule->barangay,
-                'is_rhu' => $isRHU
-            ]);
+            // DEBUG: Uncomment for debugging notifications
+            // Log::info("Starting notification for schedule", [
+            //     'schedule_id' => $schedule->id,
+            //     'barangay' => $schedule->barangay,
+            //     'is_rhu' => $isRHU
+            // ]);
             
             // Query Parents table directly (indexed on barangay for performance)
             $query = Parents::query();
@@ -283,10 +296,10 @@ class VaccinationScheduleController extends Controller
             
             $parents = $query->get();
             
-            Log::info("Parents found for notification", [
-                'count' => $parents->count(),
-                'is_rhu' => $isRHU
-            ]);
+            // DEBUG: Log::info("Parents found for notification", [
+            //     'count' => $parents->count(),
+            //     'is_rhu' => $isRHU
+            // ]);
 
             $smsService = app(SmsService::class);
             $notificationsSent = 0;
@@ -321,12 +334,12 @@ class VaccinationScheduleController extends Controller
                 }
             }
 
-            Log::info("Vaccination schedule notifications sent", [
-                'schedule_id' => $schedule->id,
-                'barangay' => $schedule->barangay,
-                'notifications_sent' => $notificationsSent,
-                'sms_sent' => $smsSent,
-            ]);
+            // DEBUG: Log::info("Vaccination schedule notifications sent", [
+            //     'schedule_id' => $schedule->id,
+            //     'barangay' => $schedule->barangay,
+            //     'notifications_sent' => $notificationsSent,
+            //     'sms_sent' => $smsSent,
+            // ]);
 
         } catch (\Exception $e) {
             Log::error("Failed to send vaccination schedule notifications: " . $e->getMessage());
@@ -394,12 +407,12 @@ class VaccinationScheduleController extends Controller
                 }
             }
 
-            Log::info("Schedule cancellation notifications sent", [
-                'schedule_id' => $schedule->id,
-                'barangay' => $schedule->barangay,
-                'notifications_sent' => $notificationsSent,
-                'sms_sent' => $smsSent,
-            ]);
+            // DEBUG: Log::info("Schedule cancellation notifications sent", [
+            //     'schedule_id' => $schedule->id,
+            //     'barangay' => $schedule->barangay,
+            //     'notifications_sent' => $notificationsSent,
+            //     'sms_sent' => $smsSent,
+            // ]);
 
         } catch (\Exception $e) {
             Log::error("Failed to send cancellation notifications: " . $e->getMessage());

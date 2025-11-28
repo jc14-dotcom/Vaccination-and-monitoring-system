@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Patient;
 use App\Models\PatientVaccineRecord;
+use App\Models\PatientGrowthRecord;
 use App\Models\Feedback;
 use App\Models\Vaccine;
 use App\Models\Barangay;
@@ -87,7 +88,10 @@ class PatientController extends Controller
         
         // Monthly vaccination data for the current year (Jan to Dec)
         // For barangay workers, only count their barangay's patients
-        $currentYear = Carbon::now()->year;
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $currentYear = Carbon::now('Asia/Manila')->year;
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // $currentYear = Carbon::now()->year;
         $monthlyData = [];
         
         if ($healthWorker && !$healthWorker->isRHU()) {
@@ -168,7 +172,7 @@ class PatientController extends Controller
     public function show($id)
     {
         $healthWorker = $this->getHealthWorker();
-        $patient = Patient::findOrFail($id);
+        $patient = Patient::with('latestGrowthRecord')->findOrFail($id);
         
         // Verify health worker can access this patient's barangay
         if ($healthWorker && !$healthWorker->canAccessBarangay($patient->barangay)) {
@@ -328,12 +332,13 @@ class PatientController extends Controller
         try {
             $healthWorker = $this->getHealthWorker();
             
-            Log::info('getPatients called', [
-                'search' => $request->get('search'),
-                'barangay' => $request->get('barangay'),
-                'page' => $request->get('page'),
-                'health_worker_barangay' => $healthWorker ? $healthWorker->getAssignedBarangayName() : 'RHU'
-            ]);
+            // DEBUG: Uncomment for debugging
+            // Log::info('getPatients called', [
+            //     'search' => $request->get('search'),
+            //     'barangay' => $request->get('barangay'),
+            //     'page' => $request->get('page'),
+            //     'health_worker_barangay' => $healthWorker ? $healthWorker->getAssignedBarangayName() : 'RHU'
+            // ]);
 
             // Build query with health worker's barangay filter
             $query = Patient::forHealthWorker($healthWorker);
@@ -345,13 +350,13 @@ class PatientController extends Controller
                     $q->where('name', 'LIKE', '%' . $searchTerm . '%')
                       ->orWhere('contact_no', 'LIKE', '%' . $searchTerm . '%');
                 });
-                Log::info('Applied search filter', ['term' => $searchTerm]);
+                // DEBUG: Log::info('Applied search filter', ['term' => $searchTerm]);
             }
             
             // Apply additional barangay filter (for RHU admin selecting specific barangay)
             if ($request->filled('barangay') && $healthWorker && $healthWorker->isRHU()) {
                 $query->where('barangay', $request->barangay);
-                Log::info('Applied barangay filter', ['barangay' => $request->barangay]);
+                // DEBUG: Log::info('Applied barangay filter', ['barangay' => $request->barangay]);
             }
             
             // Order by created_at with newest first
@@ -361,7 +366,7 @@ class PatientController extends Controller
             $perPage = min((int)$request->get('size', 30), 50);
             $patients = $query->paginate($perPage);
             
-            Log::info('Query results', ['total' => $patients->total()]);
+            // DEBUG: Log::info('Query results', ['total' => $patients->total()]);
             
             // Transform data to include age and formatted name
             $transformedPatients = [];
@@ -389,6 +394,116 @@ class PatientController extends Controller
             return response()->json([
                 'error' => 'Failed to load patients',
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Store a new growth record for a patient
+     */
+    public function storeGrowthRecord(Request $request, $id)
+    {
+        // Ensure JSON response for AJAX requests
+        if (!$request->expectsJson()) {
+            $request->headers->set('Accept', 'application/json');
+        }
+        
+        $healthWorker = $this->getHealthWorker();
+        
+        $patient = Patient::findOrFail($id);
+        
+        if ($healthWorker && !$healthWorker->canAccessBarangay($patient->barangay)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to update this patient.'
+            ], 403);
+        }
+        
+        // Get the values, treating empty strings as null
+        $weight = $request->input('weight');
+        $height = $request->input('height');
+        
+        // Convert empty strings to null
+        $weight = ($weight === '' || $weight === null) ? null : (float)$weight;
+        $height = ($height === '' || $height === null) ? null : (float)$height;
+        
+        // Check if both are empty/null
+        if ($weight === null && $height === null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please provide at least weight or height.'
+            ], 422);
+        }
+        
+        // Basic validation - just check if numeric and reasonable
+        if ($weight !== null && ($weight < 0.1 || $weight > 100)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Weight must be between 0.1 and 100 kg.'
+            ], 422);
+        }
+        
+        if ($height !== null && ($height < 1 || $height > 250)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Height must be between 1 and 250 cm.'
+            ], 422);
+        }
+        
+        try {
+            // First, clean up any duplicate records for today (keep only the latest one)
+            $todaysRecords = PatientGrowthRecord::where('patient_id', $patient->id)
+                ->whereDate('recorded_date', Carbon::today())
+                ->orderBy('id', 'desc')
+                ->get();
+            
+            if ($todaysRecords->count() > 1) {
+                // Keep the first (latest by ID), delete the rest
+                $todaysRecords->skip(1)->each(function ($record) {
+                    $record->delete();
+                });
+            }
+            
+            // Now update or create the record for today
+            $existingRecord = PatientGrowthRecord::where('patient_id', $patient->id)
+                ->whereDate('recorded_date', Carbon::today())
+                ->first();
+            
+            if ($existingRecord) {
+                // Update existing record, merging with existing values
+                $existingRecord->update([
+                    'weight' => $weight !== null ? $weight : $existingRecord->weight,
+                    'height' => $height !== null ? $height : $existingRecord->height,
+                    'recorded_by' => $healthWorker ? $healthWorker->id : $existingRecord->recorded_by,
+                ]);
+                $growthRecord = $existingRecord->fresh();
+            } else {
+                // Create new record
+                $growthRecord = PatientGrowthRecord::create([
+                    'patient_id' => $patient->id,
+                    'weight' => $weight,
+                    'height' => $height,
+                    'recorded_date' => Carbon::today(),
+                    'recorded_by' => $healthWorker ? $healthWorker->id : null,
+                    'measurement_type' => 'routine_checkup',
+                    'notes' => 'Recorded during vaccination visit'
+                ]);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Growth record saved successfully.',
+                'data' => [
+                    'weight' => $growthRecord->weight,
+                    'height' => $growthRecord->height,
+                    'recorded_date' => $growthRecord->recorded_date->format('M d, Y')
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to save growth record: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save growth record. Please try again.'
             ], 500);
         }
     }

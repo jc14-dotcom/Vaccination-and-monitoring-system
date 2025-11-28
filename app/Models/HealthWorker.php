@@ -100,13 +100,16 @@ class HealthWorker extends Authenticatable
 
     /**
      * Get list of barangays for vaccination schedule dropdown.
-     * RHU admins get schedulable barangays + "RHU/All Barangays" option.
+     * RHU admins get schedulable barangays + "RHU (Health Center)" option.
      * Barangay workers get only their assigned barangay (if schedulable).
      */
     public function getSchedulableBarangays(): array
     {
         if ($this->isRHU()) {
-            return Barangay::getSchedulableNames();
+            // Get all schedulable barangays and prepend RHU option
+            $barangays = Barangay::getSchedulableNames();
+            array_unshift($barangays, 'RHU (Health Center)');
+            return $barangays;
         }
 
         // Barangay worker - return their barangay only if it's schedulable

@@ -5,8 +5,9 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
-use NotificationChannels\WebPush\WebPushChannel;
-use NotificationChannels\WebPush\WebPushMessage;
+// LEGACY: WebPush/VAPID - Replaced by FCM (Firebase Cloud Messaging)
+// use NotificationChannels\WebPush\WebPushChannel;
+// use NotificationChannels\WebPush\WebPushMessage;
 use App\Channels\FcmChannel;
 
 /**
@@ -106,31 +107,32 @@ class VaccinationScheduleCancelled extends Notification // implements ShouldQueu
     }
 
     /**
-     * Get the WebPush message.
+     * LEGACY: WebPush/VAPID method - Replaced by FCM (Firebase Cloud Messaging)
+     * Kept for reference in case rollback is needed
      */
-    public function toWebPush(object $notifiable): WebPushMessage
-    {
-        $date = \Carbon\Carbon::parse($this->vaccinationSchedule->vaccination_date)->format('F d, Y');
-        $time = $this->vaccinationSchedule->vaccination_time ?: '7:00 AM';
-        
-        $body = sprintf(
-            'Ang schedule ng bakuna sa %s ay nakansela. Petsa: %s, Oras: %s',
-            $this->vaccinationSchedule->barangay,
-            $date,
-            $time
-        );
-
-        if ($this->reason) {
-            $body .= '. Dahilan: ' . $this->reason;
-        }
-
-        return (new WebPushMessage())
-            ->title('Nakansela ang Schedule ng Bakuna')
-            ->icon('/images/icon-192x192.png')
-            ->body($body)
-            ->action('Tingnan', route('parent.dashboard'))
-            ->data(['id' => $this->vaccinationSchedule->id]);
-    }
+    // public function toWebPush(object $notifiable): WebPushMessage
+    // {
+    //     $date = \Carbon\Carbon::parse($this->vaccinationSchedule->vaccination_date)->format('F d, Y');
+    //     $time = $this->vaccinationSchedule->vaccination_time ?: '7:00 AM';
+    //     
+    //     $body = sprintf(
+    //         'Ang schedule ng bakuna sa %s ay nakansela. Petsa: %s, Oras: %s',
+    //         $this->vaccinationSchedule->barangay,
+    //         $date,
+    //         $time
+    //     );
+    //
+    //     if ($this->reason) {
+    //         $body .= '. Dahilan: ' . $this->reason;
+    //     }
+    //
+    //     return (new WebPushMessage())
+    //         ->title('Nakansela ang Schedule ng Bakuna')
+    //         ->icon('/images/icon-192x192.png')
+    //         ->body($body)
+    //         ->action('Tingnan', route('parent.dashboard'))
+    //         ->data(['id' => $this->vaccinationSchedule->id]);
+    // }
 
     /**
      * Get the FCM message.

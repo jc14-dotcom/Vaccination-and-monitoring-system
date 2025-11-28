@@ -814,7 +814,8 @@
             const monthStart = parseInt(document.getElementById('month_start').value);
             const monthEnd = parseInt(document.getElementById('month_end').value);
             
-            console.log('Saving report:', { year, monthStart, monthEnd }); // Debug log
+            // DEBUG: Uncomment for debugging
+            // console.log('Saving report:', { year, monthStart, monthEnd });
             
             fetch('{{ route("reports.lock") }}', {
                 method: 'POST',

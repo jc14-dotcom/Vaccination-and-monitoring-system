@@ -99,12 +99,29 @@ class Patient extends Model
     // Add these relationships at the end of the class, before the closing brace
     public function growthRecords()
     {
-        return $this->hasMany(PatientGrowthRecord::class)->orderBy('recorded_date', 'desc');
+        return $this->hasMany(PatientGrowthRecord::class)->orderBy('recorded_date', 'desc')->orderBy('id', 'desc');
     }
 
     public function latestGrowthRecord()
     {
-        return $this->hasOne(PatientGrowthRecord::class)->latest('recorded_date');
+        return $this->hasOne(PatientGrowthRecord::class)->orderBy('recorded_date', 'desc')->orderBy('id', 'desc');
+    }
+
+    /**
+     * Get unique growth records (one per day, keeping the latest entry for each day)
+     * This prevents showing multiple records from the same day in the history
+     */
+    public function getUniqueGrowthRecordsAttribute()
+    {
+        return $this->growthRecords()
+            ->get()
+            ->groupBy(function ($record) {
+                return \Carbon\Carbon::parse($record->recorded_date)->format('Y-m-d');
+            })
+            ->map(function ($records) {
+                return $records->first(); // Get the latest record for each day (already sorted by id desc)
+            })
+            ->values();
     }
 
     // Helper method to get current height with fallback to birth height
@@ -136,7 +153,10 @@ class Patient extends Model
         }
         
         $birthDate = \Carbon\Carbon::parse($this->date_of_birth);
-        $now = \Carbon\Carbon::now();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $now = \Carbon\Carbon::now('Asia/Manila');
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // $now = \Carbon\Carbon::now();
         
         // Use floor() to get whole numbers only (no decimals)
         $ageInYears = (int) $birthDate->diffInYears($now);
@@ -288,7 +308,10 @@ class Patient extends Model
             return 'unknown';
         }
 
-        $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now('Asia/Manila');
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now();
         $birthDate = \Carbon\Carbon::parse($this->date_of_birth);
         $ageInMonths = $birthDate->diffInMonths($targetDate);
 
@@ -317,7 +340,10 @@ class Patient extends Model
      */
     public function isFIC($targetDate = null)
     {
-        $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now('Asia/Manila');
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now();
         $birthDate = \Carbon\Carbon::parse($this->date_of_birth);
         $ageInMonths = $birthDate->diffInMonths($targetDate);
 
@@ -362,7 +388,10 @@ class Patient extends Model
      */
     public function isCIC($targetDate = null)
     {
-        $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now('Asia/Manila');
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now();
         $birthDate = \Carbon\Carbon::parse($this->date_of_birth);
         $ageInMonths = $birthDate->diffInMonths($targetDate);
 
@@ -410,7 +439,10 @@ class Patient extends Model
             return 0;
         }
 
-        $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now('Asia/Manila');
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // $targetDate = $targetDate ? \Carbon\Carbon::parse($targetDate) : \Carbon\Carbon::now();
         $birthDate = \Carbon\Carbon::parse($this->date_of_birth);
         
         return (int) $birthDate->diffInMonths($targetDate);

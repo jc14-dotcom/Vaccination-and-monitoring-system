@@ -45,17 +45,28 @@ class HealthWorkerController extends Controller
         $todaySchedules = $todaySchedulesQuery->get();
         
         // Generate session ID if today has active vaccination schedule
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $nowPHT = now('Asia/Manila');
         if ($todaySchedules->count() > 0 && !session('vaccination_session_id')) {
-            $sessionId = 'vax_' . now()->format('Y-m-d') . '_' . strtoupper(substr(md5(uniqid()), 0, 6));
+            $sessionId = 'vax_' . $nowPHT->format('Y-m-d') . '_' . strtoupper(substr(md5(uniqid()), 0, 6));
             session(['vaccination_session_id' => $sessionId]);
-            session(['vaccination_day' => now()->toDateString()]);
+            session(['vaccination_day' => $nowPHT->toDateString()]);
         }
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // if ($todaySchedules->count() > 0 && !session('vaccination_session_id')) {
+        //     $sessionId = 'vax_' . now()->format('Y-m-d') . '_' . strtoupper(substr(md5(uniqid()), 0, 6));
+        //     session(['vaccination_session_id' => $sessionId]);
+        //     session(['vaccination_day' => now()->toDateString()]);
+        // }
         
         // Check if vaccination_day is set and if more than 24 hours have passed
         $vaccinationDay = session('vaccination_day');
         if ($vaccinationDay) {
-            $now = now();
-            $day = \Carbon\Carbon::parse($vaccinationDay);
+            // SERVER-SIDE TIMEZONE (Production)
+            $now = now('Asia/Manila');
+            // LOCAL/DEFAULT TIMEZONE (Testing)
+            // $now = now();
+            $day = \Carbon\Carbon::parse($vaccinationDay)->setTimezone('Asia/Manila');
             if ($now->diffInHours($day) >= 24) {
                 // Reset statuses after 24 hours
                 session(['missed_patients' => [], 'vaccinated_patients' => [], 'vaccination_day' => null]);
@@ -159,9 +170,15 @@ class HealthWorkerController extends Controller
             $patient->display_name = $patient->formatted_name;
             
             // Determine status based on vaccination transactions created TODAY
+            // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+            $todayDatePHT = now('Asia/Manila')->toDateString();
             $hasTransactionToday = VaccinationTransaction::where('patient_id', $patient->id)
-                ->whereDate('created_at', now()->toDateString())
+                ->whereDate('created_at', $todayDatePHT)
                 ->exists();
+            // LOCAL/DEFAULT TIMEZONE (Testing)
+            // $hasTransactionToday = VaccinationTransaction::where('patient_id', $patient->id)
+            //     ->whereDate('created_at', now()->toDateString())
+            //     ->exists();
             
             if (in_array($patient->id, $missedPatients)) {
                 $patient->status = 'missed';
@@ -209,14 +226,20 @@ class HealthWorkerController extends Controller
             }
             
             // Apply status filter based on vaccination transactions created today
+            // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+            $todayPHT = now('Asia/Manila')->toDateString();
             if ($request->filled('status')) {
                 $status = $request->status;
                 
                 if ($status === 'vaccinated') {
                     // Patient has vaccination transaction created today
-                    $query->whereHas('vaccinationTransactions', function($q) {
-                        $q->whereDate('created_at', now()->toDateString());
+                    $query->whereHas('vaccinationTransactions', function($q) use ($todayPHT) {
+                        $q->whereDate('created_at', $todayPHT);
                     });
+                    // LOCAL/DEFAULT TIMEZONE (Testing)
+                    // $query->whereHas('vaccinationTransactions', function($q) {
+                    //     $q->whereDate('created_at', now()->toDateString());
+                    // });
                 } elseif ($status === 'missed') {
                     // Use session data for missed patients
                     if (!empty($missedPatients)) {
@@ -232,9 +255,13 @@ class HealthWorkerController extends Controller
                     }
                 } elseif ($status === 'not_done') {
                     // Patient has NO transactions created today
-                    $query->whereDoesntHave('vaccinationTransactions', function($q) {
-                        $q->whereDate('created_at', now()->toDateString());
+                    $query->whereDoesntHave('vaccinationTransactions', function($q) use ($todayPHT) {
+                        $q->whereDate('created_at', $todayPHT);
                     });
+                    // LOCAL/DEFAULT TIMEZONE (Testing)
+                    // $query->whereDoesntHave('vaccinationTransactions', function($q) {
+                    //     $q->whereDate('created_at', now()->toDateString());
+                    // });
                 }
             }
             
@@ -251,9 +278,14 @@ class HealthWorkerController extends Controller
                 $patientArray = $patient->toArray();
                 
                 // Determine status based on vaccination transactions created TODAY
+                // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
                 $hasTransactionToday = VaccinationTransaction::where('patient_id', $patient->id)
-                    ->whereDate('created_at', now()->toDateString())
+                    ->whereDate('created_at', $todayPHT)
                     ->exists();
+                // LOCAL/DEFAULT TIMEZONE (Testing)
+                // $hasTransactionToday = VaccinationTransaction::where('patient_id', $patient->id)
+                //     ->whereDate('created_at', now()->toDateString())
+                //     ->exists();
                 
                 if (in_array($patient->id, $missedPatients)) {
                     $patientArray['status'] = 'missed';
@@ -292,16 +324,21 @@ class HealthWorkerController extends Controller
         $healthWorker = $this->getHealthWorker();
         
         // Generate unique vaccination session ID
-        $sessionId = 'vax_' . now()->format('Y-m-d') . '_' . strtoupper(substr(md5(uniqid()), 0, 6));
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $sessionId = 'vax_' . now('Asia/Manila')->format('Y-m-d') . '_' . strtoupper(substr(md5(uniqid()), 0, 6));
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // $sessionId = 'vax_' . now()->format('Y-m-d') . '_' . strtoupper(substr(md5(uniqid()), 0, 6));
         
         // Store vaccination session ID in session
         session(['vaccination_session_id' => $sessionId]);
         
         // Set the timezone to Asia/Manila (PHT)
-        // $nowPHT = now('Asia/Manila');
-        // session(['vaccination_day' => $nowPHT->toDateString()]);
+        $nowPHT = now('Asia/Manila');
+        session(['vaccination_day' => $nowPHT->toDateString()]);
 
-        // --- CLIENT-SIDE DEMO LOGIC (for defense) ---
+        /*
+        // --- CLIENT-SIDE DEMO LOGIC (for defense/testing) ---
+        // Uncomment this section and comment out the server-side logic below to use local machine time
         session(['vaccination_day' => now()->toDateString()]);
         if ($request->input('after_six_pm') == '1') {
             // Get patients filtered by health worker's barangay
@@ -320,24 +357,25 @@ class HealthWorkerController extends Controller
             // If before 6 PM, reset missed/vaccinated
             session(['missed_patients' => [], 'vaccinated_patients' => []]);
         }
-
-        /*
-        // --- ORIGINAL SERVER-SIDE LOGIC (commented for defense) ---
-        // if ($nowPHT->hour >= 18) {
-        //     $patients = \App\Models\Patient::all();
-        //     $vaccinatedPatients = session('vaccinated_patients', []);
-        //     $missedPatients = session('missed_patients', []);
-        //     foreach ($patients as $patient) {
-        //         if (!in_array($patient->id, $vaccinatedPatients)) {
-        //             $missedPatients[] = $patient->id;
-        //         }
-        //     }
-        //     $missedPatients = array_unique($missedPatients);
-        //     session(['missed_patients' => $missedPatients]);
-        // } else {
-        //     session(['missed_patients' => [], 'vaccinated_patients' => []]);
-        // }
         */
+
+        // --- SERVER-SIDE LOGIC (Production) ---
+        // Uses server time in Asia/Manila timezone for 6PM cutoff
+        if ($nowPHT->hour >= 18) {
+            // Get patients filtered by health worker's barangay
+            $patients = Patient::forHealthWorker($healthWorker)->get();
+            $vaccinatedPatients = session('vaccinated_patients', []);
+            $missedPatients = session('missed_patients', []);
+            foreach ($patients as $patient) {
+                if (!in_array($patient->id, $vaccinatedPatients)) {
+                    $missedPatients[] = $patient->id;
+                }
+            }
+            $missedPatients = array_unique($missedPatients);
+            session(['missed_patients' => $missedPatients]);
+        } else {
+            session(['missed_patients' => [], 'vaccinated_patients' => []]);
+        }
 
         return back();
     }

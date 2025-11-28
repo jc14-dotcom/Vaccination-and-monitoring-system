@@ -14,12 +14,452 @@
         .table-grid td:not(:first-of-type), .table-grid th:not(:first-of-type) { border-left: 1px solid rgba(122, 91, 189, 0.22); }
         .table-grid tbody tr > td:nth-of-type(2) { text-align: center; }
         
+        /* Screen/Print visibility classes - hide print-only elements on screen */
+        @media screen {
+            .print-only { display: none !important; }
+            .print-only-flex { display: none !important; }
+            .print-inline-row { display: none !important; }
+        }
+        
+        /* ========== PRINT STYLES - Compact Immunization Card ========== */
         @media print {
-            @page { size: landscape; margin: 0.2cm; }
-            .no-print { display: none !important; }
-            body { font-size: 7pt; }
-            header.brand-gradient { background: #7a5bbd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            th { background: #7a5bbd !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page { 
+                size: A4 landscape; 
+                margin: 1.5cm 2cm; 
+            }
+            
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
+            /* Show print-only, hide screen-only */
+            .print-only { display: block !important; visibility: visible !important; }
+            .print-only-flex { display: flex !important; visibility: visible !important; }
+            .print-inline-row { display: flex !important; visibility: visible !important; }
+            div.print-only.print-inline-row { display: flex !important; visibility: visible !important; }
+            .screen-only,
+            .screen-only *,
+            div.screen-only,
+            .grid.screen-only,
+            .screen-only.grid {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            html, body {
+                width: 100%;
+                height: auto;
+                margin: 0;
+                padding: 0;
+                font-size: 10pt;
+                background: white !important;
+            }
+            
+            .no-print { 
+                display: none !important; 
+            }
+            
+            .page-wrap {
+                max-width: 85% !important;
+                width: 85% !important;
+                padding: 0 !important;
+                margin: 0 auto !important;
+            }
+            
+            /* Header - Compact purple banner */
+            header.brand-gradient,
+            header {
+                background: linear-gradient(135deg, #5a3f99 0%, #402d73 100%) !important;
+                border-radius: 0 !important;
+                margin-bottom: 0.4cm !important;
+                padding: 0.3cm 0.5cm !important;
+                page-break-inside: avoid;
+            }
+            
+            header .px-3,
+            header .sm\:px-6 {
+                padding: 0.2cm 0.4cm !important;
+            }
+            
+            header h1 {
+                font-size: 16pt !important;
+                font-weight: bold !important;
+                margin: 0 !important;
+            }
+            
+            header p {
+                font-size: 8pt !important;
+                margin: 0 !important;
+            }
+            
+            header img {
+                height: 1.2cm !important;
+                width: auto !important;
+            }
+            
+            header a,
+            header .invisible {
+                display: none !important;
+            }
+            
+            /* Patient Info Section - Compact layout like physical card */
+            .grid.grid-cols-1.md\:grid-cols-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.2cm 1.5cm !important;
+                margin-bottom: 0.3cm !important;
+                padding: 0 0.5cm !important;
+            }
+            
+            .space-y-4 {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 0.1cm !important;
+            }
+            
+            .space-y-4 > div {
+                margin-bottom: 0 !important;
+            }
+            
+            .space-y-4 label,
+            label {
+                font-size: 8pt !important;
+                font-weight: 600 !important;
+                color: #333 !important;
+                margin-bottom: 0 !important;
+                display: inline !important;
+            }
+            
+            /* Hide barangay field in print */
+            .hide-print-barangay {
+                display: none !important;
+            }
+            
+            /* Hide select dropdown arrow */
+            select {
+                -webkit-appearance: none !important;
+                -moz-appearance: none !important;
+                appearance: none !important;
+                background-image: none !important;
+            }
+            
+            /* Inline fields for short values - label and value on same line */
+            .inline-print-field {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: baseline !important;
+                gap: 0.15cm !important;
+                flex-wrap: nowrap !important;
+            }
+            
+            .inline-print-field label {
+                flex-shrink: 0 !important;
+                white-space: nowrap !important;
+            }
+            
+            .inline-print-field input,
+            .inline-print-field select {
+                flex: 0 0 auto !important;
+                width: auto !important;
+                min-width: 1cm !important;
+                max-width: 4cm !important;
+            }
+            
+            /* Print inline row: Label __value__ Label __value__ format */
+            .print-inline-row {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: baseline !important;
+                gap: 0.3cm !important;
+                margin-bottom: 0.15cm !important;
+                visibility: visible !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            
+            .print-label {
+                font-size: 8pt !important;
+                font-weight: 600 !important;
+                color: #333 !important;
+                flex-shrink: 0 !important;
+                display: inline !important;
+            }
+            
+            .print-value {
+                font-size: 10pt !important;
+                border-bottom: 1px solid #333 !important;
+                min-width: 1.5cm !important;
+                padding: 0 0.1cm !important;
+                display: inline !important;
+            }
+            
+            .print-value-short {
+                min-width: 1.5cm !important;
+                max-width: 2cm !important;
+            }
+            
+            .print-value-long {
+                min-width: 3cm !important;
+                flex: 1 !important;
+            }
+            
+            /* Force show print-only content inside space-y-4 */
+            .space-y-4 > .print-only,
+            .space-y-4 > .print-inline-row {
+                display: flex !important;
+                visibility: visible !important;
+            }
+            
+            /* Input fields - No border, just underline */
+            input[type="text"],
+            input[type="date"],
+            input[type="number"],
+            select,
+            textarea {
+                border: none !important;
+                border-bottom: 1px solid #333 !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+                padding: 0.05cm 0.1cm !important;
+                font-size: 10pt !important;
+                height: auto !important;
+                min-height: 0.5cm !important;
+                line-height: 1.3 !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+            
+            /* Make fields inline with labels for compactness */
+            .space-y-4 > div {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: baseline !important;
+                gap: 0.15cm !important;
+            }
+            
+            .space-y-4 > div > label {
+                flex-shrink: 0 !important;
+            }
+            
+            .space-y-4 > div > input,
+            .space-y-4 > div > select {
+                flex: 1 !important;
+                min-width: 2.5cm !important;
+            }
+            
+            /* Grid fields (Address/Barangay, Sex/Contact) */
+            .grid.grid-cols-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.3cm !important;
+            }
+            
+            .grid.grid-cols-2 > div {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: baseline !important;
+                gap: 0.1cm !important;
+            }
+            
+            /* Vaccination Table - Compact like physical card */
+            .bg-white.rounded-xl,
+            .overflow-x-auto {
+                border-radius: 0 !important;
+                border: 1px solid #333 !important;
+                box-shadow: none !important;
+                overflow: visible !important;
+                margin-bottom: 0.3cm !important;
+            }
+            
+            table.table-grid,
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 9pt !important;
+                table-layout: fixed !important;
+            }
+            
+            /* Table column widths - narrower to fit with margins */
+            table colgroup col:nth-child(1) { width: 32% !important; } /* Bakuna */
+            table colgroup col:nth-child(2) { width: 20% !important; } /* Doses */
+            table colgroup col:nth-child(3) { width: 30% !important; } /* Petsa ng Bakuna */
+            table colgroup col:nth-child(4) { width: 18% !important; } /* Remarks */
+            
+            /* Dose columns in rows - for showing 1, 2, 3 numbers with separators */
+            .print-dose-cell {
+                display: flex !important;
+                justify-content: center !important;
+            }
+            
+            .print-dose-cell.single-dose {
+                justify-content: center !important;
+            }
+            
+            .print-dose-cell.multi-dose {
+                justify-content: space-around !important;
+            }
+            
+            .print-dose-cell span {
+                min-width: 2cm !important;
+                text-align: center !important;
+            }
+            
+            /* Dose column separators - vertical lines between 1, 2, 3 */
+            .dose-with-separator {
+                display: flex !important;
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .dose-with-separator > span {
+                flex: 1 1 0% !important;
+                width: 0 !important;
+                text-align: center !important;
+                border-right: 1px solid #999 !important;
+                padding: 0.1cm 0.05cm !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                word-break: break-word !important;
+                font-size: 8pt !important;
+            }
+            
+            .dose-with-separator > span:last-child {
+                border-right: none !important;
+            }
+            
+            /* Table cell containing doses - remove padding for full width separator */
+            td:nth-child(3) {
+                padding: 0 !important;
+            }
+            
+            td:nth-child(3) .dose-with-separator {
+                min-height: 0.5cm !important;
+            }
+            
+            /* Table Header - Orange/Yellow like physical card */
+            thead tr,
+            .bg-primary-700 {
+                background: #f5a623 !important;
+            }
+            
+            thead th,
+            th {
+                background: #f5a623 !important;
+                color: #000 !important;
+                font-size: 9pt !important;
+                font-weight: 700 !important;
+                padding: 0.15cm 0.2cm !important;
+                border: 1px solid #333 !important;
+                text-transform: uppercase !important;
+                text-align: center !important;
+            }
+            
+            /* Table Body */
+            tbody td,
+            td {
+                padding: 0.1cm 0.15cm !important;
+                border: 1px solid #666 !important;
+                font-size: 9pt !important;
+                vertical-align: middle !important;
+                text-align: center !important;
+            }
+            
+            /* First column (Bakuna) - left align */
+            tbody td:first-child {
+                text-align: left !important;
+            }
+            
+            tbody tr:nth-child(odd) {
+                background: #fff !important;
+            }
+            
+            tbody tr:nth-child(even) {
+                background: #f9f9f9 !important;
+            }
+            
+            /* Date inputs in table - show only actual dates, no placeholders */
+            td input[type="date"] {
+                width: auto !important;
+                font-size: 9pt !important;
+                padding: 0 !important;
+                text-align: center !important;
+                border: none !important;
+                background: transparent !important;
+            }
+            
+            /* Hide empty date inputs (show blank instead of mm/dd/yyyy) */
+            td input[type="date"]:not([value]),
+            td input[type="date"][value=""] {
+                color: transparent !important;
+            }
+            
+            td .grid {
+                display: flex !important;
+                justify-content: center !important;
+                gap: 0.3cm !important;
+            }
+            
+            td .grid input {
+                flex: 0 0 auto !important;
+                min-width: 0 !important;
+            }
+            
+            /* Remarks textarea */
+            td textarea {
+                width: 100% !important;
+                min-height: 0.4cm !important;
+                font-size: 8pt !important;
+                resize: none !important;
+                border: none !important;
+                padding: 0.05cm !important;
+                background: transparent !important;
+            }
+            
+            /* School-Aged Children separator row */
+            .school-aged-header,
+            tr.school-aged-header {
+                background: #e8d4f0 !important;
+            }
+            
+            .school-aged-header td {
+                background: #e8d4f0 !important;
+                font-weight: bold !important;
+                font-size: 9pt !important;
+                text-transform: uppercase !important;
+                padding: 0.15cm 0.3cm !important;
+                text-align: left !important;
+            }
+            
+            /* Info note at bottom - compact */
+            .rounded-xl.bg-gradient-to-r,
+            .brand-gradient:not(header) {
+                background: #5a3f99 !important;
+                color: white !important;
+                padding: 0.2cm 0.4cm !important;
+                font-size: 7pt !important;
+                border-radius: 0 !important;
+                margin-top: 0.3cm !important;
+            }
+            
+            /* Ensure everything fits on one page */
+            .page-wrap > * {
+                page-break-inside: avoid !important;
+            }
+            
+            /* Hide wave/decorative elements */
+            svg[viewBox="0 0 1440 100"],
+            .absolute.inset-x-0 {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -80,13 +520,21 @@
                 <label class="block text-sm font-semibold text-gray-800 mb-1">Place of Birth</label>
                 <input type="text" value="{{ $patient->place_of_birth ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
             </div>
-            <div>
+            {{-- Screen: separate Address and Barangay fields --}}
+            <div class="grid grid-cols-2 gap-4 screen-only">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-1">Address</label>
+                    <input type="text" value="{{ $patient->address ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-1">Barangay</label>
+                    <input type="text" value="{{ $patient->barangay ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
+                </div>
+            </div>
+            {{-- Print: Address only (no Barangay field) --}}
+            <div class="print-only">
                 <label class="block text-sm font-semibold text-gray-800 mb-1">Address</label>
                 <input type="text" value="{{ $patient->address ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-1">Barangay</label>
-                <input type="text" value="{{ $patient->barangay ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
             </div>
         </div>
         <div class="space-y-4">
@@ -98,7 +546,8 @@
                 <label class="block text-sm font-semibold text-gray-800 mb-1">Father's Name</label>
                 <input type="text" value="{{ $patient->father_name ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            {{-- Screen: normal grid layout --}}
+            <div class="grid grid-cols-2 gap-4 screen-only">
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Birth Weight (kg)</label>
                     <input type="number" value="{{ $patient->birth_weight ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
@@ -108,17 +557,33 @@
                     <input type="number" value="{{ $patient->birth_height ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
                 </div>
             </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-1">Sex</label>
-                <select disabled class="block w-full h-11 rounded-md border-2 border-primary-300 bg-gray-50 px-3 text-[15px]">
-                    <option value="" disabled {{ empty($patient->sex ?? '') ? 'selected' : '' }}>Select Sex</option>
-                    <option value="Male" {{ ($patient->sex ?? '') === 'Male' ? 'selected' : '' }}>Male</option>
-                    <option value="Female" {{ ($patient->sex ?? '') === 'Female' ? 'selected' : '' }}>Female</option>
-                </select>
+            <div class="grid grid-cols-2 gap-4 screen-only">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-1">Sex</label>
+                    <select disabled class="block w-full h-11 rounded-md border-2 border-primary-300 bg-gray-50 px-3 text-[15px]">
+                        <option value="" disabled {{ empty($patient->sex ?? '') ? 'selected' : '' }}>Select Sex</option>
+                        <option value="Male" {{ ($patient->sex ?? '') === 'Male' ? 'selected' : '' }}>Male</option>
+                        <option value="Female" {{ ($patient->sex ?? '') === 'Female' ? 'selected' : '' }}>Female</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-1">Contact No.</label>
+                    <input type="text" value="{{ $patient->contact_no ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-1">Contact No.</label>
-                <input type="text" value="{{ $patient->contact_no ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
+            {{-- Print: inline layout - Birth Weight (kg) ____ Birth Height (cm) _____ --}}
+            <div class="print-only print-inline-row">
+                <span class="print-label">Birth Weight (kg)</span>
+                <span class="print-value">{{ $patient->birth_weight ?? '' }}</span>
+                <span class="print-label">Birth Height (cm)</span>
+                <span class="print-value">{{ $patient->birth_height ?? '' }}</span>
+            </div>
+            {{-- Print: inline layout - Sex _______  Contact No. _____________________ --}}
+            <div class="print-only print-inline-row">
+                <span class="print-label">Sex</span>
+                <span class="print-value print-value-short">{{ $patient->sex ?? '' }}</span>
+                <span class="print-label">Contact No.</span>
+                <span class="print-value print-value-long">{{ $patient->contact_no ?? '' }}</span>
             </div>
         </div>
     </div>
@@ -129,41 +594,110 @@
             <table class="min-w-full table-grid">
                 <thead>
                     <tr class="bg-primary-700 text-white">
-                        <th class="p-3 md:p-4 text-left text-xs sm:text-sm font-bold uppercase tracking-wide">BAKUNA</th>
-                        <th class="p-3 md:p-4 text-left text-xs sm:text-sm font-bold uppercase tracking-wide">DOSES</th>
-                        <th class="p-3 md:p-4 text-center text-xs sm:text-sm font-bold uppercase tracking-wide" colspan="2">PETSA NG BAKUNA</th>
+                        <th class="p-3 md:p-4 text-center text-xs sm:text-sm font-bold uppercase tracking-wide">BAKUNA</th>
+                        <th class="p-3 md:p-4 text-center text-xs sm:text-sm font-bold uppercase tracking-wide">DOSES</th>
+                        <th class="p-3 md:p-4 text-center text-xs sm:text-sm font-bold uppercase tracking-wide">PETSA NG BAKUNA</th>
                         <th class="p-3 md:p-4 text-center text-xs sm:text-sm font-bold uppercase tracking-wide">REMARKS</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-primary-50">
+                    @php
+                        $showSchoolAgedHeader = false;
+                        $schoolAgedVaccines = ['Measles Containing', 'Tetanus Diphtheria', 'Human Papillomavirus'];
+                    @endphp
                     @foreach(($vaccinations ?? []) as $vaccination)
                         @php
                             $vaccineName = optional($vaccination->vaccine)->vaccine_name;
                             $dosesDescription = optional($vaccination->vaccine)->doses_description;
+                            
+                            // Check if we need to show SCHOOL-AGED CHILDREN header
+                            $isSchoolAged = in_array($vaccineName, $schoolAgedVaccines);
+                            $needsHeader = $isSchoolAged && !$showSchoolAgedHeader;
+                            if ($isSchoolAged) $showSchoolAgedHeader = true;
+                            
+                            // Format vaccine names with "Vaccine" and acronym for print
+                            $vaccineDisplayNames = [
+                                'BCG' => 'BCG Vaccine',
+                                'Hepatitis B' => 'Hepatitis B Vaccine',
+                                'Pentavalent' => 'Pentavalent Vaccine (DPT-Hep B-HIB)',
+                                'Oral Polio' => 'Oral Polio Vaccine (OPV)',
+                                'Inactivated Polio' => 'Inactivated Polio Vaccine (IPV)',
+                                'Pneumococcal Conjugate' => 'Pneumococcal Conjugate Vaccine (PCV)',
+                                'Measles, Mumps, Rubella' => 'Measles, Mumps, Rubella Vaccine (MMR)',
+                                'Measles Containing' => 'Measles Containing Vaccine (MCV) MR/MMR',
+                                'Tetanus Diphtheria' => 'Tetanus Diphtheria (TD)',
+                                'Human Papillomavirus' => 'Human Papillomavirus Vaccine',
+                            ];
+                            $displayName = $vaccineDisplayNames[$vaccineName] ?? $vaccineName;
+                            
+                            // Format dates for display
+                            $formatDate = function($date) {
+                                if (empty($date)) return '';
+                                try {
+                                    return \Carbon\Carbon::parse($date)->format('m/d/Y');
+                                } catch (\Exception $e) {
+                                    return $date;
+                                }
+                            };
                         @endphp
+                        
+                        {{-- SCHOOL-AGED CHILDREN separator row --}}
+                        @if($needsHeader)
+                            <tr class="school-aged-header">
+                                <td colspan="4" class="p-2 md:p-3 text-sm font-bold uppercase bg-purple-100 text-purple-800">SCHOOL-AGED CHILDREN</td>
+                            </tr>
+                        @endif
+                        
                         <tr class="odd:bg-white even:bg-gray-50">
-                            <td class="p-3 md:p-4 text-sm sm:text-base text-gray-900 font-medium">{{ $vaccineName ?? 'N/A' }}</td>
-                            <td class="p-3 md:p-4 text-sm sm:text-base text-gray-700">{{ $dosesDescription ?? 'N/A' }}</td>
-                            <td class="p-3 md:p-4 text-center" colspan="2">
+                            <td class="p-3 md:p-4 text-sm sm:text-base text-gray-900 font-medium">
+                                <span class="screen-only">{{ $vaccineName ?? 'N/A' }}</span>
+                                <span class="print-only hidden">{{ $displayName ?? 'N/A' }}</span>
+                            </td>
+                            <td class="p-3 md:p-4 text-sm sm:text-base text-gray-700 text-center">{{ $dosesDescription ?? 'N/A' }}</td>
+                            <td class="p-3 md:p-4 text-center">
                                 @if(in_array($vaccineName, ['BCG', 'Hepatitis B']) || ($vaccineName === 'Measles Containing' && $dosesDescription === 'Grade 1'))
-                                    <input type="date" value="{{ $vaccination->dose_1_date ?? '' }}" readonly class="w-full h-10 rounded-md border-2 border-gray-300 bg-gray-50 px-3 text-sm text-center">
+                                    {{-- Screen: date input --}}
+                                    <input type="date" value="{{ $vaccination->dose_1_date ?? '' }}" readonly class="screen-only w-full h-10 rounded-md border-2 border-gray-300 bg-gray-50 px-3 text-sm text-center">
+                                    {{-- Print: single dose centered --}}
+                                    <div class="print-only hidden print-only-flex dose-with-separator">
+                                        <span>{{ $formatDate($vaccination->dose_1_date) ?: '1' }}</span>
+                                    </div>
                                 @elseif(in_array($vaccineName, ['Inactivated Polio', 'Measles, Mumps, Rubella', 'Tetanus Diphtheria', 'Human Papillomavirus']) || ($vaccineName === 'Measles Containing' && $dosesDescription === 'Grade 7'))
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {{-- Screen: date inputs --}}
+                                    <div class="screen-only grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <input type="date" value="{{ $vaccination->dose_1_date ?? '' }}" readonly class="h-10 rounded-md border-2 border-gray-300 bg-gray-50 px-3 text-sm text-center">
                                         <input type="date" value="{{ $vaccination->dose_2_date ?? '' }}" readonly class="h-10 rounded-md border-2 border-gray-300 bg-gray-50 px-3 text-sm text-center">
                                     </div>
+                                    {{-- Print: two doses with separator --}}
+                                    <div class="print-only hidden print-only-flex dose-with-separator">
+                                        <span>{{ $formatDate($vaccination->dose_1_date) ?: '1' }}</span>
+                                        <span>{{ $formatDate($vaccination->dose_2_date) ?: '2' }}</span>
+                                    </div>
                                 @elseif(in_array($vaccineName, ['Pentavalent', 'Oral Polio', 'Pneumococcal Conjugate']))
-                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    {{-- Screen: date inputs --}}
+                                    <div class="screen-only grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <input type="date" value="{{ $vaccination->dose_1_date ?? '' }}" readonly class="h-10 rounded-md border-2 border-gray-300 bg-gray-50 px-3 text-sm text-center">
                                         <input type="date" value="{{ $vaccination->dose_2_date ?? '' }}" readonly class="h-10 rounded-md border-2 border-gray-300 bg-gray-50 px-3 text-sm text-center">
                                         <input type="date" value="{{ $vaccination->dose_3_date ?? '' }}" readonly class="h-10 rounded-md border-2 border-gray-300 bg-gray-50 px-3 text-sm text-center">
                                     </div>
+                                    {{-- Print: three doses with separators --}}
+                                    <div class="print-only hidden print-only-flex dose-with-separator">
+                                        <span>{{ $formatDate($vaccination->dose_1_date) ?: '1' }}</span>
+                                        <span>{{ $formatDate($vaccination->dose_2_date) ?: '2' }}</span>
+                                        <span>{{ $formatDate($vaccination->dose_3_date) ?: '3' }}</span>
+                                    </div>
                                 @else
-                                    <input type="date" value="{{ $vaccination->dose_1_date ?? '' }}" readonly class="w-full h-10 rounded-md border-2 border-gray-300 bg-gray-50 px-3 text-sm text-center">
+                                    {{-- Screen: date input --}}
+                                    <input type="date" value="{{ $vaccination->dose_1_date ?? '' }}" readonly class="screen-only w-full h-10 rounded-md border-2 border-gray-300 bg-gray-50 px-3 text-sm text-center">
+                                    {{-- Print: single dose centered --}}
+                                    <div class="print-only hidden print-only-flex dose-with-separator">
+                                        <span>{{ $formatDate($vaccination->dose_1_date) ?: '1' }}</span>
+                                    </div>
                                 @endif
                             </td>
                             <td class="p-3 md:p-4">
-                                <textarea readonly class="w-full min-h-[3rem] rounded-md border-2 border-gray-300 bg-gray-50 px-3 py-2 text-sm resize-none">{{ $vaccination->remarks ?? '' }}</textarea>
+                                <textarea readonly class="screen-only w-full min-h-[3rem] rounded-md border-2 border-gray-300 bg-gray-50 px-3 py-2 text-sm resize-none">{{ $vaccination->remarks ?? '' }}</textarea>
+                                <span class="print-only hidden">{{ $vaccination->remarks ?? '' }}</span>
                             </td>
                         </tr>
                     @endforeach

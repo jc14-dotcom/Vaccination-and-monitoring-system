@@ -69,16 +69,30 @@
         $hoursRemaining = 0;
         
         if ($parent && $parent->barangay) {
+            // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+            $nowPHT = Carbon::now('Asia/Manila');
+            $todayPHT = Carbon::today('Asia/Manila');
+            
             // Find the most recent vaccination schedule for parent's barangay
             $recentSchedule = VaccinationSchedule::where('barangay', $parent->barangay)
-                ->where('vaccination_date', '<=', Carbon::now())
+                ->where('vaccination_date', '<=', $todayPHT)
                 ->orderBy('vaccination_date', 'desc')
                 ->first();
             
             if ($recentSchedule) {
-                $vaccinationDate = Carbon::parse($recentSchedule->vaccination_date);
-                $hoursElapsed = Carbon::now()->diffInHours($vaccinationDate);
+                $vaccinationDate = Carbon::parse($recentSchedule->vaccination_date)->setTimezone('Asia/Manila');
+                $hoursElapsed = $nowPHT->diffInHours($vaccinationDate);
                 $hoursRemaining = max(0, 24 - $hoursElapsed);
+                
+            // LOCAL/DEFAULT TIMEZONE (Testing) - Uses server default timezone
+            // $recentSchedule = VaccinationSchedule::where('barangay', $parent->barangay)
+            //     ->where('vaccination_date', '<=', Carbon::now())
+            //     ->orderBy('vaccination_date', 'desc')
+            //     ->first();
+            // if ($recentSchedule) {
+            //     $vaccinationDate = Carbon::parse($recentSchedule->vaccination_date);
+            //     $hoursElapsed = Carbon::now()->diffInHours($vaccinationDate);
+            //     $hoursRemaining = max(0, 24 - $hoursElapsed);
                 
                 // Check if within 24-hour window
                 if ($hoursElapsed <= 24) {
@@ -302,16 +316,9 @@
                             <div class="dose-box p-2 rounded border-2 {{ $dose1Status['color'] }} text-center">
                                 @if($dose1)
                                     <div class="font-semibold">{{ \Carbon\Carbon::parse($dose1)->format('M d, Y') }}</div>
-                                    <div class="text-xs">✓ Completed</div>
+                                    <div class="text-xs">✓ Dose 1</div>
                                 @else
-                                    <div class="font-semibold">Not Given</div>
-                                    <div class="text-xs">
-                                        @if($dose1Status['status'] == 'overdue')
-                                            ⚠ Overdue
-                                        @else
-                                            ⏳ Pending
-                                        @endif
-                                    </div>
+                                    <div class="font-semibold">Dose 1</div>
                                 @endif
                             </div>
                         </td>
@@ -328,13 +335,6 @@
                                     <div class="text-xs">✓ Dose 1</div>
                                 @else
                                     <div class="font-semibold">Dose 1</div>
-                                    <div class="text-xs">
-                                        @if($dose1Status['status'] == 'overdue')
-                                            ⚠ Overdue
-                                        @else
-                                            ⏳ Pending
-                                        @endif
-                                    </div>
                                 @endif
                             </div>
                         </td>
@@ -345,13 +345,6 @@
                                     <div class="text-xs">✓ Dose 2</div>
                                 @else
                                     <div class="font-semibold">Dose 2</div>
-                                    <div class="text-xs">
-                                        @if($dose2Status['status'] == 'overdue')
-                                            ⚠ Overdue
-                                        @else
-                                            ⏳ Pending
-                                        @endif
-                                    </div>
                                 @endif
                             </div>
                         </td>
@@ -369,13 +362,6 @@
                                     <div class="text-xs">✓ Dose 1</div>
                                 @else
                                     <div class="font-semibold">Dose 1</div>
-                                    <div class="text-xs">
-                                        @if($dose1Status['status'] == 'overdue')
-                                            ⚠ Overdue
-                                        @else
-                                            ⏳ Pending
-                                        @endif
-                                    </div>
                                 @endif
                             </div>
                         </td>
@@ -386,13 +372,6 @@
                                     <div class="text-xs">✓ Dose 2</div>
                                 @else
                                     <div class="font-semibold">Dose 2</div>
-                                    <div class="text-xs">
-                                        @if($dose2Status['status'] == 'overdue')
-                                            ⚠ Overdue
-                                        @else
-                                            ⏳ Pending
-                                        @endif
-                                    </div>
                                 @endif
                             </div>
                         </td>
@@ -403,13 +382,6 @@
                                     <div class="text-xs">✓ Dose 3</div>
                                 @else
                                     <div class="font-semibold">Dose 3</div>
-                                    <div class="text-xs">
-                                        @if($dose3Status['status'] == 'overdue')
-                                            ⚠ Overdue
-                                        @else
-                                            ⏳ Pending
-                                        @endif
-                                    </div>
                                 @endif
                             </div>
                         </td>
@@ -420,16 +392,9 @@
                             <div class="dose-box p-2 rounded border-2 {{ $dose1Status['color'] }} text-center">
                                 @if($dose1)
                                     <div class="font-semibold">{{ \Carbon\Carbon::parse($dose1)->format('M d, Y') }}</div>
-                                    <div class="text-xs">✓ Completed</div>
+                                    <div class="text-xs">✓ Dose 1</div>
                                 @else
-                                    <div class="font-semibold">Not Given</div>
-                                    <div class="text-xs">
-                                        @if($dose1Status['status'] == 'overdue')
-                                            ⚠ Overdue
-                                        @else
-                                            ⏳ Pending
-                                        @endif
-                                    </div>
+                                    <div class="font-semibold">Dose 1</div>
                                 @endif
                             </div>
                         </td>
@@ -502,62 +467,100 @@
         </div>
 
         <!-- Growth History Modal -->
-        <div id="growthHistoryModal" class="modal hidden fixed inset-0 z-50 bg-black/40 overflow-y-auto">
-            <div class="modal-content bg-white mx-auto my-4 p-4 sm:p-5 border border-gray-300 rounded-lg shadow-lg w-[95%] sm:w-[90%] max-w-4xl max-h-[95vh] overflow-y-auto">
-                <span class="closeGrowth float-right text-2xl cursor-pointer">&times;</span>
-                <h2 class="text-lg text-black sm:text-xl font-bold mb-4">📊 Growth History</h2>
-                
-                @if($patient->growthRecords && $patient->growthRecords->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="w-full border-collapse bg-white mb-4">
+        <!-- Growth History Modal - Responsive Design -->
+        <div id="growthHistoryModal" class="modal hidden fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+            <!-- Dark overlay -->
+            <div class="fixed inset-0" style="background-color: rgba(0,0,0,0.85);"></div>
+            
+            <!-- Modal Panel - Compact responsive width -->
+            <div class="flex min-h-full items-center justify-center" style="padding: 8px;">
+                <div id="growthModalCard" class="relative rounded-xl shadow-2xl transform transition-all overflow-hidden" style="background-color: #ffffff; width: 100%; max-width: 500px;">
+                    
+                    <!-- Header - Purple theme -->
+                    <div style="background-color: #7c3aed; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <h2 style="font-size: 18px; font-weight: 700; color: #ffffff; margin: 0;">Growth History</h2>
+                            <p style="font-size: 12px; color: #ddd6fe; margin-top: 2px;">{{ $patient->first_name }} {{ $patient->last_name }}</p>
+                        </div>
+                        <button class="closeGrowth" style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer;">
+                            <svg style="width: 18px; height: 18px; color: #ffffff;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Current Stats Row -->
+                    @php
+                        $uniqueGrowthRecords = $patient->uniqueGrowthRecords;
+                        $currentHeight = $uniqueGrowthRecords && $uniqueGrowthRecords->count() > 0 
+                            ? $uniqueGrowthRecords->first()->height 
+                            : $patient->birth_height;
+                        $currentWeight = $uniqueGrowthRecords && $uniqueGrowthRecords->count() > 0 
+                            ? $uniqueGrowthRecords->first()->weight 
+                            : $patient->birth_weight;
+                    @endphp
+                    
+                    <div style="background-color: #f5f3ff; padding: 16px 20px; display: flex; align-items: center; justify-content: center; gap: 24px; border-bottom: 1px solid #ddd6fe;">
+                        <div style="text-align: center;">
+                            <p style="font-size: 11px; font-weight: 600; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Current Height</p>
+                            <p style="font-size: 26px; font-weight: 700; color: #7c3aed; margin: 0;">{{ $currentHeight }}<span style="font-size: 14px; font-weight: 500; color: #8b5cf6; margin-left: 2px;">cm</span></p>
+                        </div>
+                        <div style="width: 1px; height: 40px; background-color: #c4b5fd;"></div>
+                        <div style="text-align: center;">
+                            <p style="font-size: 11px; font-weight: 600; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Current Weight</p>
+                            <p style="font-size: 26px; font-weight: 700; color: #7c3aed; margin: 0;">{{ $currentWeight }}<span style="font-size: 14px; font-weight: 500; color: #8b5cf6; margin-left: 2px;">kg</span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Table Section -->
+                    <div style="padding: 16px; max-height: 45vh; overflow-y: auto; background-color: #ffffff;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <!-- Table Header - Purple theme -->
                             <thead>
-                                <tr class="bg-purple-600 text-white">
-                                    <th class="p-3 text-left text-sm font-semibold">Date</th>
-                                    <th class="p-3 text-left text-sm font-semibold">Height (cm)</th>
-                                    <th class="p-3 text-left text-sm font-semibold">Weight (kg)</th>
-                                    <th class="p-3 text-left text-sm font-semibold">Type</th>
-                                    <th class="p-3 text-left text-sm font-semibold">Notes</th>
+                                <tr style="background-color: #7c3aed;">
+                                    <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 700; color: #ffffff; text-transform: uppercase;">Date</th>
+                                    <th style="padding: 10px 8px; text-align: center; font-size: 11px; font-weight: 700; color: #ffffff; text-transform: uppercase;">Height</th>
+                                    <th style="padding: 10px 8px; text-align: center; font-size: 11px; font-weight: 700; color: #ffffff; text-transform: uppercase;">Weight</th>
+                                    <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 700; color: #ffffff; text-transform: uppercase;">Type</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($patient->growthRecords as $record)
-                                    <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                        <td class="p-3 text-sm">{{ \Carbon\Carbon::parse($record->recorded_date)->format('M d, Y') }}</td>
-                                        <td class="p-3 text-sm font-semibold text-blue-600">{{ $record->height }}</td>
-                                        <td class="p-3 text-sm font-semibold text-green-600">{{ $record->weight }}</td>
-                                        <td class="p-3 text-sm">
-                                            <span class="px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
-                                                {{ ucfirst(str_replace('_', ' ', $record->measurement_type)) }}
-                                            </span>
+                                @if($uniqueGrowthRecords && $uniqueGrowthRecords->count() > 0)
+                                    @foreach($uniqueGrowthRecords as $index => $record)
+                                    <tr style="background-color: {{ $index % 2 === 0 ? '#faf5ff' : '#ffffff' }}; border-bottom: 1px solid #e5e7eb;">
+                                        <td style="padding: 10px 12px; color: #1f2937; font-weight: 500; font-size: 13px;">{{ \Carbon\Carbon::parse($record->recorded_date)->format('M d, Y') }}</td>
+                                        <td style="padding: 10px 8px; color: #1f2937; text-align: center; font-weight: 600; font-size: 14px;">{{ $record->height ?? '-' }}</td>
+                                        <td style="padding: 10px 8px; color: #1f2937; text-align: center; font-weight: 600; font-size: 14px;">{{ $record->weight ?? '-' }}</td>
+                                        <td style="padding: 10px 12px; text-align: center;">
+                                            @if($index === 0)
+                                            <span style="display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 600; background-color: #7c3aed; color: #ffffff; border-radius: 12px;">Latest</span>
+                                            @else
+                                            <span style="display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 500; background-color: #e5e7eb; color: #374151; border-radius: 12px;">Checkup</span>
+                                            @endif
                                         </td>
-                                        <td class="p-3 text-sm">{{ $record->notes ?? '-' }}</td>
                                     </tr>
-                                @endforeach
+                                    @endforeach
+                                @endif
                                 
-                                <!-- Birth Record -->
-                                <tr class="border-b border-gray-200 bg-yellow-50">
-                                    <td class="p-3 text-sm">{{ \Carbon\Carbon::parse($patient->date_of_birth)->format('M d, Y') }}</td>
-                                    <td class="p-3 text-sm font-semibold text-blue-600">{{ $patient->birth_height }}</td>
-                                    <td class="p-3 text-sm font-semibold text-green-600">{{ $patient->birth_weight }}</td>
-                                    <td class="p-3 text-sm">
-                                        <span class="px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-800">Birth</span>
+                                <!-- Birth Row -->
+                                <tr style="background-color: #fef3c7; border-top: 2px solid #fbbf24;">
+                                    <td style="padding: 10px 12px; color: #1f2937; font-weight: 500; font-size: 13px;">{{ \Carbon\Carbon::parse($patient->date_of_birth)->format('M d, Y') }}</td>
+                                    <td style="padding: 10px 8px; color: #1f2937; text-align: center; font-weight: 600; font-size: 14px;">{{ $patient->birth_height }}</td>
+                                    <td style="padding: 10px 8px; color: #1f2937; text-align: center; font-weight: 600; font-size: 14px;">{{ $patient->birth_weight }}</td>
+                                    <td style="padding: 10px 12px; text-align: center;">
+                                        <span style="display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 600; background-color: #f59e0b; color: #ffffff; border-radius: 12px;">Birth</span>
                                     </td>
-                                    <td class="p-3 text-sm">Initial measurements at birth</td>
                                 </tr>
                             </tbody>
                         </table>
+                        
+                        @if(!$uniqueGrowthRecords || $uniqueGrowthRecords->count() === 0)
+                        <p style="text-align: center; font-size: 13px; color: #6b7280; margin-top: 16px; padding: 12px; background-color: #f3f4f6; border-radius: 8px;">
+                            No checkup records yet. Only birth measurements are available.
+                        </p>
+                        @endif
                     </div>
-                @else
-                    <div class="text-center py-8">
-                        <div class="text-6xl mb-4">📊</div>
-                        <p class="text-gray-600 mb-2">No growth history available yet.</p>
-                        <p class="text-sm text-gray-500">Only birth measurements are recorded.</p>
-                        <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-                            <p class="text-sm"><strong>Birth Height:</strong> {{ $patient->birth_height }} cm</p>
-                            <p class="text-sm"><strong>Birth Weight:</strong> {{ $patient->birth_weight }} kg</p>
-                        </div>
-                    </div>
-                @endif
+                </div>
             </div>
         </div>
 
@@ -714,7 +717,7 @@
             // Growth History Modal
             const growthModal = document.getElementById("growthHistoryModal");
             const growthBtn = document.getElementById("growthHistoryBtn");
-            const growthSpan = document.getElementsByClassName("closeGrowth")[0];
+            const growthCloseButtons = document.getElementsByClassName("closeGrowth");
 
             if (growthBtn) {
                 growthBtn.onclick = function() {
@@ -722,8 +725,9 @@
                 }
             }
 
-            if (growthSpan) {
-                growthSpan.onclick = function() {
+            // Handle all close buttons
+            for (let i = 0; i < growthCloseButtons.length; i++) {
+                growthCloseButtons[i].onclick = function() {
                     growthModal.style.display = "none";
                 }
             }
@@ -732,7 +736,8 @@
                 if (event.target == modal) {
                     modal.style.display = "none";
                 }
-                if (event.target == growthModal) {
+                // Close when clicking on backdrop
+                if (event.target == growthModal || event.target.classList.contains('bg-gray-900/60')) {
                     growthModal.style.display = "none";
                 }
             }

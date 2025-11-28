@@ -5,8 +5,9 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
-use NotificationChannels\WebPush\WebPushChannel;
-use NotificationChannels\WebPush\WebPushMessage;
+// LEGACY: WebPush/VAPID - Replaced by FCM (Firebase Cloud Messaging)
+// use NotificationChannels\WebPush\WebPushChannel;
+// use NotificationChannels\WebPush\WebPushMessage;
 use App\Channels\FcmChannel;
 use Carbon\Carbon;
 
@@ -83,26 +84,27 @@ class VaccinationReminder extends Notification implements ShouldQueue
     }
 
     /**
-     * Get the WebPush message.
+     * LEGACY: WebPush/VAPID method - Replaced by FCM (Firebase Cloud Messaging)
+     * Kept for reference in case rollback is needed
      */
-    public function toWebPush(object $notifiable): WebPushMessage
-    {
-        $daysText = $this->daysUntil == 1 ? 'bukas' : $this->daysUntil . ' araw';
-        
-        return (new WebPushMessage())
-            ->title('Paalala: Malapit na ang Bakuna')
-            ->icon('/images/icon-192x192.png')
-            ->body(sprintf(
-                'Ang bakuna para kay %s ay %s na. Petsa: %s, Oras: %s',
-                $this->patient->name,
-                $daysText,
-                $this->vaccinationSchedule->vaccination_date,
-                $this->vaccinationSchedule->vaccination_time
-            ))
-            ->action('Tingnan', route('parent.dashboard'))
-            ->data(['id' => $this->vaccinationSchedule->id])
-            ->badge('/images/badge.png');
-    }
+    // public function toWebPush(object $notifiable): WebPushMessage
+    // {
+    //     $daysText = $this->daysUntil == 1 ? 'bukas' : $this->daysUntil . ' araw';
+    //     
+    //     return (new WebPushMessage())
+    //         ->title('Paalala: Malapit na ang Bakuna')
+    //         ->icon('/images/icon-192x192.png')
+    //         ->body(sprintf(
+    //             'Ang bakuna para kay %s ay %s na. Petsa: %s, Oras: %s',
+    //             $this->patient->name,
+    //             $daysText,
+    //             $this->vaccinationSchedule->vaccination_date,
+    //             $this->vaccinationSchedule->vaccination_time
+    //         ))
+    //         ->action('Tingnan', route('parent.dashboard'))
+    //         ->data(['id' => $this->vaccinationSchedule->id])
+    //         ->badge('/images/badge.png');
+    // }
 
     /**
      * Get the FCM message.

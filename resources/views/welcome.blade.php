@@ -104,8 +104,8 @@
                     </p>
                     <div class="flex flex-wrap gap-4 pt-2" data-animate>
                         <a href="{{ route('login') }}"
-                            class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#7a5bbd] to-[#5a3f99] hover:from-[#6d51ad] hover:to-[#4b3583] text-white font-semibold px-6 py-3 shadow-lg shadow-purple-600/30 hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0 transition border border-white/40">
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            class="group inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#7a5bbd] to-[#5a3f99] text-white font-semibold px-6 py-3 shadow-lg shadow-purple-600/30 border border-white/40 transition-all duration-300 hover:from-[#8b6dce] hover:to-[#6b4faa] hover:shadow-2xl hover:shadow-purple-500/50 hover:-translate-y-1 hover:scale-110 active:translate-y-0 active:scale-100">
+                            <svg class="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M3 4.5A1.5 1.5 0 014.5 3h6A1.5 1.5 0 0112 4.5V6h-1V4.5a.5.5 0 00-.5-.5h-6a.5.5 0 00-.5.5v11a.5.5 0 00.5.5h6a.5.5 0 00.5-.5V14h1v1.5A1.5 1.5 0 0110.5 17h-6A1.5 1.5 0 013 15.5v-11z" />
                                 <path
@@ -114,7 +114,7 @@
                             Login
                         </a>
                         <a href="#learn-more"
-                            class="inline-flex items-center gap-2 rounded-lg bg-transparent/5 backdrop-blur text-white font-medium px-6 py-3 border border-white/50 hover:bg-white/10 hover:border-white/70 transition">
+                            class="inline-flex items-center gap-2 rounded-lg bg-white/10 backdrop-blur text-white font-medium px-6 py-3 border-2 border-white/60 transition-all duration-300 hover:-translate-y-1 hover:scale-110 hover:shadow-2xl hover:border-white hover:bg-white/20 active:translate-y-0 active:scale-100">
                             Learn More
                         </a>
                     </div>
@@ -291,7 +291,7 @@
                     Login Now
                 </a>
                 <a href="#learn-more"
-                    class="inline-flex items-center gap-2 rounded-lg bg-white/90 text-[#5a3f99] border border-[#5a3f99] hover:bg-[#5a3f99] hover:text-white px-8 py-3 font-semibold shadow hover:shadow-md transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7a5bbd]/50">
+                    class="inline-flex items-center gap-2 rounded-lg bg-white text-[#5a3f99] border-2 border-[#5a3f99] hover:bg-[#f5f3ff] hover:border-[#7a5bbd] hover:translate-y-[-2px] hover:scale-105 hover:shadow-lg active:translate-y-0 active:scale-100 px-8 py-3 font-semibold shadow transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7a5bbd]/50">
                     Learn More
                 </a>
             </div>
@@ -300,6 +300,15 @@
             class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-purple-300/40 to-transparent dark:via-purple-500/30">
         </div>
     </section>
+
+    <!-- Back to Top Button - Fixed at bottom right, above footer -->
+    <button id="backToTop" 
+        class="fixed bottom-24 right-6 z-50 h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-lg ring-2 ring-[#7a5bbd] opacity-0 invisible translate-y-4 transition-all duration-300 hover:bg-[#f5f3ff] hover:shadow-xl hover:scale-110 active:scale-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-purple-400"
+        aria-label="Back to top">
+        <svg class="h-6 w-6 text-[#7a5bbd]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
 
     <!-- Footer -->
     <footer class="mt-auto bg-gray-900 text-gray-300 pt-12 pb-10 relative overflow-hidden">
@@ -345,6 +354,47 @@
                     window.location.reload();
                 }
             });
+        })();
+
+        // Back to Top button functionality
+        (function() {
+            const backToTopBtn = document.getElementById('backToTop');
+            if (!backToTopBtn) return;
+
+            // Show/hide button based on scroll position
+            function toggleBackToTop() {
+                // Show when scrolled more than 500px from top
+                if (window.scrollY > 500) {
+                    backToTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+                    backToTopBtn.classList.add('opacity-100', 'visible', 'translate-y-0');
+                } else {
+                    backToTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+                    backToTopBtn.classList.remove('opacity-100', 'visible', 'translate-y-0');
+                }
+            }
+
+            // Smooth scroll to top
+            backToTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Listen for scroll events (throttled)
+            let ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        toggleBackToTop();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+
+            // Check on page load
+            toggleBackToTop();
         })();
 
         // Scroll reveal

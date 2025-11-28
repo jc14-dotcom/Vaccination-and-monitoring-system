@@ -115,6 +115,9 @@ Route::middleware(['prevent.back', 'ensure.auth:health_worker'])->group(function
     
     Route::put('/vaccinations/update/{id}', [VaccinationController::class, 'update'])->name('vaccinations.update');
     
+    // Growth record management
+    Route::post('/patient/{id}/growth-record', [PatientController::class, 'storeGrowthRecord'])->name('patient.growth_record.store');
+    
     // Inventory management
     Route::get('/health_worker/inventory', [InventoryController::class, 'index'])->name('health_worker.inventory');
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
@@ -207,17 +210,18 @@ Route::middleware(['web'])->group(function () {
     Route::delete('/api/notifications/{id}', [NotificationController::class, 'destroy'])
         ->name('api.notifications.destroy');
     
-    // Push subscription routes (VAPID - legacy)
-    Route::post('/api/push/subscribe', [PushSubscriptionController::class, 'subscribe'])
-        ->name('api.push.subscribe');
-    Route::post('/api/push/unsubscribe', [PushSubscriptionController::class, 'unsubscribe'])
-        ->name('api.push.unsubscribe');
-    Route::get('/api/push/public-key', [PushSubscriptionController::class, 'getPublicKey'])
-        ->name('api.push.public-key');
-    Route::post('/api/push/test', [PushSubscriptionController::class, 'testPush'])
-        ->name('api.push.test');
+    // LEGACY: Push subscription routes (VAPID) - Replaced by FCM (Firebase Cloud Messaging)
+    // Kept for reference in case rollback is needed
+    // Route::post('/api/push/subscribe', [PushSubscriptionController::class, 'subscribe'])
+    //     ->name('api.push.subscribe');
+    // Route::post('/api/push/unsubscribe', [PushSubscriptionController::class, 'unsubscribe'])
+    //     ->name('api.push.unsubscribe');
+    // Route::get('/api/push/public-key', [PushSubscriptionController::class, 'getPublicKey'])
+    //     ->name('api.push.public-key');
+    // Route::post('/api/push/test', [PushSubscriptionController::class, 'testPush'])
+    //     ->name('api.push.test');
     
-    // FCM routes (Firebase Cloud Messaging - new)
+    // FCM routes (Firebase Cloud Messaging - production)
     Route::post('/api/fcm/subscribe', [FcmController::class, 'subscribe'])
         ->name('api.fcm.subscribe');
     Route::post('/api/fcm/unsubscribe', [FcmController::class, 'unsubscribe'])

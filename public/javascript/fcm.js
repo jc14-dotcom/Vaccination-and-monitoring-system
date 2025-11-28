@@ -16,14 +16,14 @@ class FcmNotificationManager {
      */
     async init() {
         try {
-            console.log('Initializing FCM...');
+            // DEBUG: console.log('Initializing FCM...');
             
             // Fetch FCM config from server
             await this.fetchConfig();
             
             // Check if Firebase is supported
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-                console.log('Push notifications not supported');
+                // DEBUG: console.log('Push notifications not supported');
                 return;
             }
             
@@ -45,7 +45,7 @@ class FcmNotificationManager {
             // Listen for foreground messages
             this.listenForMessages();
             
-            console.log('FCM initialized successfully');
+            // DEBUG: console.log('FCM initialized successfully');
             
         } catch (error) {
             console.error('FCM initialization failed:', error);
@@ -72,7 +72,7 @@ class FcmNotificationManager {
             // Store VAPID key separately
             this.vapidKey = data.vapidKey;
             
-            console.log('FCM config fetched:', this.fcmConfig.projectId);
+            // DEBUG: console.log('FCM config fetched:', this.fcmConfig.projectId);
             
         } catch (error) {
             console.error('Failed to fetch FCM config:', error);
@@ -113,7 +113,7 @@ class FcmNotificationManager {
     async registerServiceWorker() {
         try {
             const registration = await navigator.serviceWorker.register('/sw.js');
-            console.log('Service Worker registered for FCM');
+            // DEBUG: console.log('Service Worker registered for FCM');
             await navigator.serviceWorker.ready;
             return registration;
         } catch (error) {
@@ -131,11 +131,11 @@ class FcmNotificationManager {
             const permission = await Notification.requestPermission();
             
             if (permission !== 'granted') {
-                console.log('Notification permission denied');
+                // DEBUG: console.log('Notification permission denied');
                 return;
             }
             
-            console.log('Notification permission granted');
+            // DEBUG: console.log('Notification permission granted');
             
             // Get FCM token with our service worker registration
             this.token = await this.messaging.getToken({
@@ -144,10 +144,10 @@ class FcmNotificationManager {
             });
             
             if (this.token) {
-                console.log('FCM Token received:', this.token.substring(0, 20) + '...');
+                // DEBUG: console.log('FCM Token received:', this.token.substring(0, 20) + '...');
                 await this.sendTokenToServer(this.token);
             } else {
-                console.log('No FCM token received');
+                // DEBUG: console.log('No FCM token received');
             }
             
         } catch (error) {
@@ -172,7 +172,7 @@ class FcmNotificationManager {
             const data = await response.json();
             
             if (data.success) {
-                console.log('FCM token saved to server');
+                // DEBUG: console.log('FCM token saved to server');
             } else {
                 console.error('Failed to save FCM token:', data.message);
             }
@@ -192,7 +192,7 @@ class FcmNotificationManager {
         this.messageHandlerRegistered = true;
         
         this.messaging.onMessage((payload) => {
-            console.log('[Foreground] FCM message received');
+            // DEBUG: console.log('[Foreground] FCM message received');
             
             // Get notification content from DATA payload
             const title = payload.data?.title || 'Notification';
@@ -234,7 +234,7 @@ class FcmNotificationManager {
                 }
             });
             
-            console.log('FCM unsubscribed successfully');
+            // DEBUG: console.log('FCM unsubscribed successfully');
             this.token = null;
             
         } catch (error) {

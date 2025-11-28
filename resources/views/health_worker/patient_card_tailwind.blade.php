@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Immunization Card</title>
     <link rel="stylesheet" href="{{ asset('css/tailwind-full.css') }}">
     <style>
@@ -21,12 +22,267 @@
         /* Modal animations */
         #errorModal { transition: opacity 0.3s ease; }
         
+        /* ========== PRINT STYLES - Compact Immunization Card ========== */
         @media print {
-            @page { size: landscape; margin: 0.2cm; }
-            .no-print { display: none !important; }
-            body { font-size: 7pt; }
-            header.brand-gradient { background: #7a5bbd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            th { background: #7a5bbd !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page { 
+                size: landscape; 
+                margin: 0.3cm; 
+            }
+            
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
+            html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                font-size: 8pt;
+                background: white !important;
+            }
+            
+            .no-print { 
+                display: none !important; 
+            }
+            
+            .page-wrap {
+                max-width: 100% !important;
+                padding: 0.2cm !important;
+                margin: 0 !important;
+            }
+            
+            /* Header - Compact purple banner */
+            header.brand-gradient,
+            header {
+                background: linear-gradient(135deg, #5a3f99 0%, #402d73 100%) !important;
+                border-radius: 0 !important;
+                margin-bottom: 0.3cm !important;
+                padding: 0.2cm 0.4cm !important;
+                page-break-inside: avoid;
+            }
+            
+            header .px-3,
+            header .sm\:px-6 {
+                padding: 0.15cm 0.3cm !important;
+            }
+            
+            header h1 {
+                font-size: 14pt !important;
+                margin: 0 !important;
+            }
+            
+            header p {
+                font-size: 7pt !important;
+                margin: 0 !important;
+            }
+            
+            header img {
+                height: 1cm !important;
+                width: auto !important;
+            }
+            
+            header a,
+            header .invisible {
+                display: none !important;
+            }
+            
+            /* Hide growth measurements section in print */
+            .mb-6.p-4.rounded-xl.bg-gradient-to-r {
+                display: none !important;
+            }
+            
+            /* Patient Info Section - Underline style like physical card */
+            .grid.grid-cols-1.md\:grid-cols-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.2cm !important;
+                margin-bottom: 0.3cm !important;
+            }
+            
+            .space-y-4 > div {
+                margin-bottom: 0.1cm !important;
+            }
+            
+            .space-y-4 label,
+            label {
+                font-size: 7pt !important;
+                font-weight: 600 !important;
+                color: #333 !important;
+                margin-bottom: 0 !important;
+                display: inline !important;
+            }
+            
+            /* Input fields - No border, just underline */
+            input[type="text"],
+            input[type="date"],
+            input[type="number"],
+            select,
+            textarea {
+                border: none !important;
+                border-bottom: 1px solid #333 !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+                padding: 0.05cm 0.1cm !important;
+                font-size: 8pt !important;
+                height: auto !important;
+                min-height: 0.4cm !important;
+                line-height: 1.2 !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+            
+            /* Make fields inline with labels for compactness */
+            .space-y-4 > div {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: baseline !important;
+                gap: 0.1cm !important;
+            }
+            
+            .space-y-4 > div > label {
+                flex-shrink: 0 !important;
+            }
+            
+            .space-y-4 > div > input,
+            .space-y-4 > div > select {
+                flex: 1 !important;
+                min-width: 2cm !important;
+            }
+            
+            /* Grid fields (Address/Barangay, Sex/Contact) */
+            .grid.grid-cols-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.2cm !important;
+            }
+            
+            .grid.grid-cols-2 > div {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: baseline !important;
+                gap: 0.05cm !important;
+            }
+            
+            /* Vaccination Table - Compact like physical card */
+            .bg-white.rounded-xl,
+            .overflow-x-auto,
+            .rounded-2xl.shadow-sm {
+                border-radius: 0 !important;
+                border: 1px solid #333 !important;
+                box-shadow: none !important;
+                overflow: visible !important;
+                margin-bottom: 0.2cm !important;
+            }
+            
+            table.table-grid,
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 7pt !important;
+            }
+            
+            /* Table Header - Orange/Yellow like physical card */
+            thead tr,
+            .bg-primary-700 {
+                background: #f5a623 !important;
+            }
+            
+            thead th,
+            th {
+                background: #f5a623 !important;
+                color: #000 !important;
+                font-size: 7pt !important;
+                font-weight: 700 !important;
+                padding: 0.1cm 0.15cm !important;
+                border: 1px solid #333 !important;
+                text-transform: uppercase !important;
+            }
+            
+            /* Table Body */
+            tbody td,
+            td {
+                padding: 0.08cm 0.1cm !important;
+                border: 1px solid #666 !important;
+                font-size: 7pt !important;
+                vertical-align: middle !important;
+            }
+            
+            tbody tr:nth-child(odd) {
+                background: #fff !important;
+            }
+            
+            tbody tr:nth-child(even) {
+                background: #f9f9f9 !important;
+            }
+            
+            /* Date inputs in table - very compact */
+            td input[type="date"],
+            td .date-input {
+                width: 100% !important;
+                font-size: 6.5pt !important;
+                padding: 0.02cm !important;
+                text-align: center !important;
+                border: none !important;
+                border-bottom: 1px solid #999 !important;
+                height: auto !important;
+            }
+            
+            td .grid {
+                display: flex !important;
+                gap: 0.1cm !important;
+            }
+            
+            td .grid input {
+                flex: 1 !important;
+                min-width: 0 !important;
+            }
+            
+            /* Remarks textarea */
+            td textarea,
+            td .remarks-area {
+                width: 100% !important;
+                min-height: 0.3cm !important;
+                font-size: 6.5pt !important;
+                resize: none !important;
+                border: none !important;
+                border-bottom: 1px solid #999 !important;
+                padding: 0.02cm !important;
+            }
+            
+            /* Info note at bottom - compact */
+            .rounded-xl.brand-gradient,
+            .mt-8.rounded-xl {
+                background: #5a3f99 !important;
+                color: white !important;
+                padding: 0.15cm 0.3cm !important;
+                font-size: 6pt !important;
+                border-radius: 0 !important;
+                margin-top: 0.2cm !important;
+            }
+            
+            /* Hide modals, alerts, buttons in print */
+            #errorModal,
+            #successModal,
+            #backdateModal,
+            #stockAlertBanner,
+            form button[type="submit"],
+            .flex.justify-center button {
+                display: none !important;
+            }
+            
+            /* Ensure everything fits on one page */
+            .page-wrap > * {
+                page-break-inside: avoid !important;
+            }
+            
+            /* Hide wave/decorative elements */
+            svg[viewBox="0 0 1440 100"],
+            .absolute.inset-x-0 {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -87,13 +343,15 @@
                 <label class="block text-sm font-semibold text-gray-800 mb-1">Place of Birth</label>
                 <input type="text" value="{{ $patient->place_of_birth ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
             </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-1">Address</label>
-                <input type="text" value="{{ $patient->address ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-1">Barangay</label>
-                <input type="text" value="{{ $patient->barangay ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-1">Address</label>
+                    <input type="text" value="{{ $patient->address ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-1">Barangay</label>
+                    <input type="text" value="{{ $patient->barangay ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
+                </div>
             </div>
         </div>
         <div class="space-y-4">
@@ -105,6 +363,7 @@
                 <label class="block text-sm font-semibold text-gray-800 mb-1">Father's Name</label>
                 <input type="text" value="{{ $patient->father_name ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
             </div>
+            <!-- Birth Weight & Height (Read-only) -->
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Birth Weight (kg)</label>
@@ -115,17 +374,89 @@
                     <input type="number" value="{{ $patient->birth_height ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
                 </div>
             </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-1">Sex</label>
+                    <select disabled class="block w-full h-11 rounded-md border-2 border-primary-300 bg-gray-50 px-3 text-[15px]">
+                        <option value="" disabled {{ empty($patient->sex ?? '') ? 'selected' : '' }}>Select Sex</option>
+                        <option value="Male" {{ ($patient->sex ?? '') === 'Male' ? 'selected' : '' }}>Male</option>
+                        <option value="Female" {{ ($patient->sex ?? '') === 'Female' ? 'selected' : '' }}>Female</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-1">Contact No.</label>
+                    <input type="text" value="{{ $patient->contact_no ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Growth Measurements Section (Full Width) -->
+    <div class="mb-6 p-4 rounded-xl bg-gradient-to-r from-primary-50 to-purple-50 border border-primary-200 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-gray-800">Current Growth Measurements</h3>
+                    <p class="text-xs text-gray-500">Update the infant's current weight and height • Auto-saves when you change values</p>
+                </div>
+            </div>
+            <div id="growthSaveStatus" class="hidden items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full">
+                <span id="statusIcon"></span>
+                <span id="statusText"></span>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-1">Sex</label>
-                <select disabled class="block w-full h-11 rounded-md border-2 border-primary-300 bg-gray-50 px-3 text-[15px]">
-                    <option value="" disabled {{ empty($patient->sex ?? '') ? 'selected' : '' }}>Select Sex</option>
-                    <option value="Male" {{ ($patient->sex ?? '') === 'Male' ? 'selected' : '' }}>Male</option>
-                    <option value="Female" {{ ($patient->sex ?? '') === 'Female' ? 'selected' : '' }}>Female</option>
-                </select>
+                <label for="current_weight" class="block text-sm font-semibold text-gray-700 mb-1">
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                        Current Weight (kg)
+                    </span>
+                </label>
+                @php
+                    $currentWeight = $patient->latestGrowthRecord->weight ?? null;
+                    $displayWeight = $currentWeight ? (floor($currentWeight) == $currentWeight ? (int)$currentWeight : $currentWeight) : '';
+                @endphp
+                <input type="number" step="0.01" min="0.5" max="50" id="current_weight" name="current_weight" 
+                    value="{{ $displayWeight }}" 
+                    placeholder="Enter weight"
+                    class="growth-input block w-full rounded-lg border-2 border-primary-300 bg-white px-3 py-2.5 text-[15px] font-medium focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20 transition-all shadow-sm hover:border-primary-400">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-1">Contact No.</label>
-                <input type="text" value="{{ $patient->contact_no ?? '' }}" readonly class="block w-full rounded-md border-2 border-primary-300 bg-gray-50 px-3 py-2.5 text-[15px]">
+                <label for="current_height" class="block text-sm font-semibold text-gray-700 mb-1">
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                        Current Height (cm)
+                    </span>
+                </label>
+                @php
+                    $currentHeight = $patient->latestGrowthRecord->height ?? null;
+                    $displayHeight = $currentHeight ? (floor($currentHeight) == $currentHeight ? (int)$currentHeight : $currentHeight) : '';
+                @endphp
+                <input type="number" step="0.01" min="20" max="200" id="current_height" name="current_height" 
+                    value="{{ $displayHeight }}" 
+                    placeholder="Enter height"
+                    class="growth-input block w-full rounded-lg border-2 border-primary-300 bg-white px-3 py-2.5 text-[15px] font-medium focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20 transition-all shadow-sm hover:border-primary-400">
+            </div>
+            <div class="sm:col-span-2 lg:col-span-2 flex items-end">
+                @if($patient->latestGrowthRecord && $patient->latestGrowthRecord->recorded_date)
+                <div class="w-full px-4 py-3 bg-white/60 rounded-lg border border-primary-100">
+                    <p class="text-xs text-gray-500 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Last updated: <strong class="text-gray-700">{{ \Carbon\Carbon::parse($patient->latestGrowthRecord->recorded_date)->format('M d, Y') }}</strong></span>
+                    </p>
+                </div>
+                @else
+                <div class="w-full px-4 py-3 bg-yellow-50/60 rounded-lg border border-yellow-200">
+                    <p class="text-xs text-yellow-700 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>No growth record yet. Enter current measurements to start tracking.</span>
+                    </p>
+                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -497,11 +828,28 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-primary-50">
+                            @php
+                                $showSchoolAgedHeader = false;
+                                $schoolAgedVaccines = ['Measles Containing', 'Tetanus Diphtheria', 'Human Papillomavirus'];
+                            @endphp
                             @foreach(($vaccinations ?? []) as $vaccination)
                                 @php
                                     $vaccineName = optional($vaccination->vaccine)->vaccine_name;
                                     $dosesDescription = optional($vaccination->vaccine)->doses_description;
+                                    
+                                    // Check if we need to show SCHOOL-AGED CHILDREN header
+                                    $isSchoolAged = in_array($vaccineName, $schoolAgedVaccines);
+                                    $needsHeader = $isSchoolAged && !$showSchoolAgedHeader;
+                                    if ($isSchoolAged) $showSchoolAgedHeader = true;
                                 @endphp
+                                
+                                {{-- SCHOOL-AGED CHILDREN separator row --}}
+                                @if($needsHeader)
+                                    <tr class="school-aged-header">
+                                        <td colspan="5" class="p-2 md:p-3 text-sm font-bold uppercase bg-purple-100 text-purple-800">SCHOOL-AGED CHILDREN</td>
+                                    </tr>
+                                @endif
+                                
                                 <tr class="odd:bg-white even:bg-gray-50">
                                     <td class="p-3 md:p-4">{{ $vaccineName ?? 'N/A' }}</td>
                                     <td class="p-3 md:p-4">{{ $dosesDescription ?? 'N/A' }}</td>
@@ -548,6 +896,9 @@
     </div>
 
     <script>
+    // Set the growth record URL for auto-save
+    window.growthRecordUrl = "{{ route('patient.growth_record.store', $patient->id) }}";
+
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('vaccinationForm');
         const saveButton = document.getElementById('saveButton');
@@ -678,8 +1029,14 @@
 
     // Check if any date is backdated before form submission
     document.getElementById('vaccinationForm')?.addEventListener('submit', function(e) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // SERVER-SIDE TIME (Production) - Uses server time from PHP
+        const serverDateStr = '{{ now()->format("Y-m-d") }}';
+        const today = new Date(serverDateStr + 'T00:00:00');
+        
+        // LOCAL MACHINE TIME (Testing) - Uses client's local time
+        // Uncomment below and comment above to use local machine time for testing
+        // const today = new Date();
+        // today.setHours(0, 0, 0, 0);
         
         const dateInputs = this.querySelectorAll('input[type="date"]:not([readonly])');
         backdateDetected = false;
@@ -734,6 +1091,146 @@
             closeBackdateModal();
         }
     });
+    // Auto-save Growth Record functionality
+    (function() {
+        const weightInput = document.getElementById('current_weight');
+        const heightInput = document.getElementById('current_height');
+        const statusContainer = document.getElementById('growthSaveStatus');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        let initialWeight = weightInput ? weightInput.value : '';
+        let initialHeight = heightInput ? heightInput.value : '';
+        let isSaving = false;
+        
+        function showStatus(type, message) {
+            if (!statusContainer) return;
+            statusContainer.classList.remove('hidden');
+            statusContainer.classList.add('flex');
+            
+            // Reset classes
+            statusContainer.className = statusContainer.className.replace(/bg-\w+-\d+/g, '').replace(/text-\w+-\d+/g, '');
+            statusContainer.classList.add('flex', 'items-center', 'gap-1.5', 'text-xs', 'font-medium', 'px-2.5', 'py-1', 'rounded-full', 'transition-all');
+            
+            if (type === 'saving') {
+                statusContainer.classList.add('bg-blue-100', 'text-blue-700');
+                statusIcon.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+                statusText.textContent = message || 'Saving...';
+            } else if (type === 'success') {
+                statusContainer.classList.add('bg-green-100', 'text-green-700');
+                statusIcon.innerHTML = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>';
+                statusText.textContent = message || 'Saved!';
+                setTimeout(hideStatus, 3000);
+            } else if (type === 'error') {
+                statusContainer.classList.add('bg-red-100', 'text-red-700');
+                statusIcon.innerHTML = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>';
+                statusText.textContent = message || 'Error!';
+                setTimeout(hideStatus, 4000);
+            }
+        }
+        
+        function hideStatus() {
+            if (statusContainer) {
+                statusContainer.classList.add('hidden');
+                statusContainer.classList.remove('flex');
+            }
+        }
+        
+        function showToast(message, type) {
+            type = type || 'success';
+            const existingToast = document.getElementById('growthToast');
+            if (existingToast) existingToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.id = 'growthToast';
+            toast.className = 'fixed bottom-4 right-4 px-4 py-3 rounded-xl shadow-lg text-white text-sm z-50 transition-all duration-300 flex items-center gap-2 ' + (type === 'success' ? 'bg-green-600' : 'bg-red-600');
+            
+            const icon = type === 'success' 
+                ? '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>'
+                : '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>';
+            
+            toast.innerHTML = icon + '<span>' + message + '</span>';
+            document.body.appendChild(toast);
+            
+            setTimeout(function() {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(function() { toast.remove(); }, 300);
+            }, 3000);
+        }
+        
+        function saveGrowthRecord() {
+            const weight = weightInput ? weightInput.value : null;
+            const height = heightInput ? heightInput.value : null;
+            
+            // Don't save if already saving
+            if (isSaving) return;
+            
+            // Don't save if both empty
+            if (!weight && !height) return;
+            
+            // Don't save if nothing changed
+            if (weight === initialWeight && height === initialHeight) return;
+            
+            isSaving = true;
+            showStatus('saving');
+            
+            fetch(window.growthRecordUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ weight: weight, height: height })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                isSaving = false;
+                if (data.success) {
+                    showStatus('success', 'Saved!');
+                    showToast('Growth record saved!', 'success');
+                    // Only update initial values after successful save
+                    initialWeight = weight;
+                    initialHeight = height;
+                } else {
+                    showStatus('error', data.message || 'Failed');
+                    showToast(data.message || 'Failed to save', 'error');
+                    // Don't update initial values on error - allow retry
+                }
+            })
+            .catch(function(error) {
+                isSaving = false;
+                console.error('Error saving growth record:', error);
+                showStatus('error', 'Error!');
+                showToast('Error saving record', 'error');
+                // Don't update initial values on error - allow retry
+            });
+        }
+        
+        // Save on blur (when user clicks outside the field)
+        if (weightInput) {
+            weightInput.addEventListener('blur', function() {
+                saveGrowthRecord();
+            });
+            weightInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    weightInput.blur(); // This will trigger blur event and save
+                }
+            });
+        }
+        
+        if (heightInput) {
+            heightInput.addEventListener('blur', function() {
+                saveGrowthRecord();
+            });
+            heightInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    heightInput.blur(); // This will trigger blur event and save
+                }
+            });
+        }
+    })();
     </script>
     
 </div>

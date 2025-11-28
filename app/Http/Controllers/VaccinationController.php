@@ -53,7 +53,10 @@ class VaccinationController extends Controller
         // Check if this is a backdate entry (only check NEWLY CHANGED dates)
         $isBackdated = false;
         $backdateType = $request->input('backdate_type'); // 'calauan' or 'external'
-        $today = now()->startOfDay()->toDateString(); // Ensure we get just the date part
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $today = now('Asia/Manila')->startOfDay()->toDateString(); // Ensure we get just the date part
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // $today = now()->startOfDay()->toDateString();
         
         if ($request->has('vaccinations')) {
             foreach ($request->vaccinations as $vaccinationId => $data) {
@@ -402,7 +405,10 @@ class VaccinationController extends Controller
      */
     private function getActiveScheduleForPatient(Patient $patient)
     {
-        $today = now()->toDateString();
+        // SERVER-SIDE TIMEZONE (Production) - Uses Asia/Manila timezone
+        $today = now('Asia/Manila')->toDateString();
+        // LOCAL/DEFAULT TIMEZONE (Testing)
+        // $today = now()->toDateString();
         
         // First, try to find a schedule specifically for the patient's barangay
         $schedule = \App\Models\VaccinationSchedule::where('vaccination_date', $today)

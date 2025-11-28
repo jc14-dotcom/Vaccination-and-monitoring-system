@@ -13,7 +13,7 @@ class ShowVaccinationFormController extends Controller
 {
     public function show(Request $request, $id)
     {
-        $patient = Patient::findOrFail($id);
+        $patient = Patient::with('latestGrowthRecord')->findOrFail($id);
         
         // Check if there's an active vaccination schedule
         $activeSchedule = VaccinationSchedule::where('status', 'active')

@@ -90,13 +90,13 @@
                 </span>
             </div>
         </nav>
-        
+
 
         <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-8 pt-10 pb-24 md:pt-16 lg:pt-24 lg:pb-40">
             <div class="grid lg:grid-cols-12 gap-10 items-center">
                 <div class="lg:col-span-6 flex flex-col gap-6 text-white">
                     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight drop-shadow-xl" data-animate>
-                        Protektadong Kinabukasan Para sa Bawat Bata
+                        Protektadong Kinabukasan Para sa Bawat Batas
                     </h1>
                     <p class="text-lg sm:text-xl text-white/90 font-medium leading-relaxed" data-animate>
                         "Pangangalaga sa kalusugan at kinabukasan ng bawat bata sa pamamagitan ng
@@ -247,10 +247,10 @@
                             </div>
                         </div>
                         <div class="mt-10 text-center" data-animate>
-                            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full 
-          bg-white text-primary-800 font-semibold px-8 py-3 
-          border border-primary-300 shadow-soft 
-          hover:bg-primary-50 hover:text-primary-900 
+                            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full
+          bg-white text-primary-800 font-semibold px-8 py-3
+          border border-primary-300 shadow-soft
+          hover:bg-primary-50 hover:text-primary-900
           hover:scale-105 transition-transform duration-200
           focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -278,11 +278,11 @@
                 ng pagsubaybay.
             </p>
             <div class="mt-8 flex flex-wrap justify-center gap-4" data-animate>
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-xl 
-          bg-gradient-to-r from-primary-600 to-primary-800 
-          text-white font-semibold px-8 py-3 
-          shadow-medium hover:shadow-strong 
-          hover:from-primary-700 hover:to-primary-900 
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-xl
+          bg-gradient-to-r from-primary-600 to-primary-800
+          text-white font-semibold px-8 py-3
+          shadow-medium hover:shadow-strong
+          hover:from-primary-700 hover:to-primary-900
           hover:scale-105 transition-transform duration-200
           focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400">
                     {{-- <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -302,7 +302,7 @@
     </section>
 
     <!-- Back to Top Button - Fixed at bottom right, above footer -->
-    <button id="backToTop" 
+    <button id="backToTop"
         class="fixed bottom-24 right-6 z-50 h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-lg ring-2 ring-[#7a5bbd] opacity-0 invisible translate-y-4 transition-all duration-300 hover:bg-[#f5f3ff] hover:shadow-xl hover:scale-110 active:scale-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-purple-400"
         aria-label="Back to top">
         <svg class="h-6 w-6 text-[#7a5bbd]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">

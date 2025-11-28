@@ -96,7 +96,7 @@
             <div class="grid lg:grid-cols-12 gap-10 items-center">
                 <div class="lg:col-span-6 flex flex-col gap-6 text-white">
                     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight drop-shadow-xl" data-animate>
-                        Protektadong Kinabukasan Para sa Bawat Batas
+                        Protektadong Kinabukasan Para sa Bawat Bata
                     </h1>
                     <p class="text-lg sm:text-xl text-white/90 font-medium leading-relaxed" data-animate>
                         "Pangangalaga sa kalusugan at kinabukasan ng bawat bata sa pamamagitan ng
